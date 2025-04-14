@@ -1,0 +1,55 @@
+{% extends "home/base.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Habit Tracker</h2>
+    <div class="table-responsive">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Habit</th>
+                    <th>Monday</th>
+                    <th>Tuesday</th>
+                    <th>Wednesday</th>
+                    <th>Thursday</th>
+                    <th>Friday</th>
+                    <th>Saturday</th>
+                    <th>Sunday</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Workout</strong></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                </tr>
+                <tr>
+                    <td><strong>No Junk Food</strong></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                </tr>
+                <tr>
+                    <td><strong>Meditation</strong></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                    <td><input type='checkbox'></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

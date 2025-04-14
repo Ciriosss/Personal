@@ -1,0 +1,313 @@
+{% extends "home/base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="mb-4">  <!-- Added margin-bottom here -->
+  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addTransactionModal">
+    <i class="bi bi-plus-circle-fill me-1"></i> Add Wallet
+  </button>
+</div>
+
+<div class="col-lg-12">
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="card-title mb-0" id="chartTitle">Wallet evolution</h5>
+        <button id="toggleChartBtn" class="btn btn-outline-primary">
+          <i class="bi bi-bar-chart-fill me-1"></i> Show Wallet composition
+        </button>
+      </div>
+
+      <!-- Stacked Bar Chart (hidden by default) -->
+      <div id="stackedBarContainer" style="display: none; height: 350px;">
+        <canvas id="stakedBarChart" style="width: 100%; height: 100%;"></canvas>
+      </div>
+
+      <!-- Area Chart (visible by default) -->
+      <div id="areaChartContainer" style="height: 350px;">
+        <div id="areaChart" style="width: 100%; height: 100%;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="account_pivot_data" style="display:none;">
+  {{ wallet_evolution|json_script:"wallet_evolution" }}
+  {{ composition_by_date|json_script:"composition_by_date" }}
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // Load composition data grouped by date and account type
+    const compositionData = JSON.parse(document.getElementById('composition_by_date').textContent);
+    
+    // Prepare data for stacked bar chart
+    const dates = [...new Set(compositionData.map(item => item.date))].sort();
+    const accountTypes = [...new Set(compositionData.map(item => item.account__type__name))];
+    
+    // Create dataset for each account type
+    const datasets = accountTypes.map(type => {
+      return {
+        label: type,
+        data: dates.map(date => {
+          const entry = compositionData.find(item => 
+            item.date === date && item.account__type__name === type
+          );
+          return entry ? parseFloat(entry.total_amount) : 0;
+        }),
+        backgroundColor: getRandomColor(),
+        borderColor: 'rgba(0,0,0,0.1)',
+        borderWidth: 1
+      };
+    });
+
+    // Initialize the stacked bar chart
+    const barChart = new Chart(document.querySelector('#stakedBarChart'), {
+      type: 'bar',
+      data: {
+        labels: dates.map(date => new Date(date).toLocaleDateString()),
+        datasets: datasets
+      },
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: 'Wallet Composition by Date'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.dataset.label || '';
+                const value = context.raw >= 0 ? context.raw : -context.raw;
+                return `${label}: ${value.toLocaleString()}`;
+              }
+            }
+          },
+          legend: {
+            position: 'bottom'
+          }
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            stacked: true,
+            title: {
+              display: true,
+              text: 'Date'
+            }
+          },
+          y: {
+            stacked: true,
+            title: {
+              display: true,
+              text: 'Amount'
+            },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    // Helper function for random colors
+    function getRandomColor() {
+      const colors = [
+        'rgba(255, 99, 132, 0.8)',
+        'rgba(54, 162, 235, 0.8)',
+        'rgba(255, 206, 86, 0.8)',
+        'rgba(75, 192, 192, 0.8)',
+        'rgba(153, 102, 255, 0.8)',
+        'rgba(255, 159, 64, 0.8)'
+      ];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    // Load and initialize area chart (unchanged)
+    const walletData = JSON.parse(document.getElementById('wallet_evolution').textContent);
+    const areaDates = Object.keys(walletData).sort();
+    const amounts = areaDates.map(date => walletData[date]);
+
+    const areaChart = new ApexCharts(document.querySelector("#areaChart"), {
+      series: [{
+        name: "Wallet Amount",
+        data: amounts.map((amount, index) => ({
+          x: new Date(areaDates[index]).getTime(),
+          y: amount
+        }))
+      }],
+      chart: {
+        type: 'area',
+        height: '100%',
+        width: '100%',
+        zoom: {
+          enabled: false
+        }
+      },
+      dataLabels: {
+        enabled: false
+      },
+      stroke: {
+        curve: 'smooth'
+      },
+      xaxis: {
+        type: 'datetime',
+        labels: {
+          formatter: function(value) {
+            return new Date(value).toLocaleDateString();
+          }
+        }
+      },
+      tooltip: {
+        x: {
+          format: 'dd MMM yyyy'
+        }
+      }
+    }).render();
+
+    // Toggle between charts (unchanged)
+    const toggleBtn = document.getElementById('toggleChartBtn');
+    const chartTitle = document.getElementById('chartTitle');
+    const barContainer = document.getElementById('stackedBarContainer');
+    const areaContainer = document.getElementById('areaChartContainer');
+    
+    toggleBtn.addEventListener('click', function() {
+      if (barContainer.style.display === 'none') {
+        barContainer.style.display = 'block';
+        areaContainer.style.display = 'none';
+        toggleBtn.innerHTML = '<i class="bi bi-graph-up me-1"></i> Show Wallet Evolution';
+        chartTitle.textContent = 'Wallet Composition';
+        barChart.update();
+      } else {
+        barContainer.style.display = 'none';
+        areaContainer.style.display = 'block';
+        toggleBtn.innerHTML = '<i class="bi bi-bar-chart-fill me-1"></i> Show Wallet Composition';
+        chartTitle.textContent = 'Wallet Evolution';
+        areaChart.update();
+      }
+    });
+  });
+</script>
+<div class="row">
+  <!-- First Column - Table -->
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Wallet composition at {{max_date|date:"d/m/Y"}}</h5>
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th scope="col">Account</th>
+              <th scope="col">Type</th>
+              <th scope="col">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in wallet_data%}
+            <tr>
+              <td>{{record.account}}</td>
+              <td>{{record.account.type.type}}</td>
+              <td>{{record.amount}}</td>
+            </tr>
+            {%endfor%}
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Second Column - Chart -->
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-body pb-0">
+        <h5 class="card-title">Wallet Composition</h5>
+        
+        <!-- Chart container -->
+        <div id="trafficChart" style="min-height: 400px;" class="echart"></div>
+        
+        <!-- Hidden element containing JSON data (Django's json_script) -->
+        <div id="wallet_composition" style="display:none;">
+          {{ wallet_composition|json_script:"wallet_composition" }}
+        </div>
+    
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            const dataElement = document.getElementById("wallet_composition");
+            if (!dataElement) {
+              console.error("wallet_composition element not found!");
+              return;
+            }
+
+            try {
+              const walletData = JSON.parse(dataElement.textContent);
+              console.log("Parsed wallet data:", walletData);
+
+              if (!walletData || Object.keys(walletData).length === 0) {
+                console.error("Wallet data is empty!");
+                return;
+              }
+
+              // Convert walletData into ECharts pie chart format
+              const pieData = Object.keys(walletData).map(key => ({
+                value: walletData[key],
+                name: key
+              }));
+
+              // Calculate total for percentage calculation
+              const total = pieData.reduce((sum, item) => sum + item.value, 0);
+
+              // Initialize the pie chart
+              const chart = echarts.init(document.getElementById("trafficChart"));
+              chart.setOption({
+                tooltip: {
+                  trigger: 'item',
+                  formatter: '{a} <br/>{b}: {c} - ({d}%)'
+                },
+                legend: {
+                  top: '5%',
+                  left: 'center'
+                },
+                series: [{
+                  name: 'Wallet Composition',
+                  type: 'pie',
+                  radius: ['40%', '70%'],
+                  avoidLabelOverlap: false,
+                  label: {
+                    show: false,
+                    position: 'center'
+                  },
+                  emphasis: {
+                    label: {
+                      show: true,
+                      fontSize: '18',
+                      fontWeight: 'bold',
+                      formatter: function(params) {
+                        // Calculate percentage
+                        const percentage = ((params.value / total) * 100).toFixed(2);
+                        return `${params.name}\n${percentage}%`;
+                      }
+                    }
+                  },
+                  labelLine: {
+                    show: false
+                  },
+                  data: pieData 
+                }]
+              });
+
+              // Handle window resize
+              window.addEventListener('resize', function() {
+                chart.resize();
+              });
+
+            } catch (error) {
+              console.error("Error:", error);
+            }
+          });
+        </script>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

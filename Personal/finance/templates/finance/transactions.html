@@ -1,0 +1,226 @@
+{% extends "home/base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="pagetitle">
+    <h1>Transactions</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+        <li class="breadcrumb-item">Tables</li>
+        <li class="breadcrumb-item active">Data</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+  
+  <!-- Add Transaction Button triggering modal -->
+  <div class="mb-4">  <!-- Added margin-bottom here -->
+    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addTransactionModal">
+      <i class="bi bi-plus-circle-fill me-1"></i> Add Transaction
+    </button>
+  </div>
+  
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Analysis period: 01-{{ now|date:"m-Y"}} to {{ now|date:"d-m-Y"}}</h5>
+            <!-- Table with stripped rows -->
+            <table class="table datatable">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Category</th>
+                  <th>Label</th>
+                  <th>Account</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                  <td>{{transaction.date|date:"Y-m-d"}}</td>
+                  <td>
+                    {% if transaction.amount > 0 %}
+                        <span style="color: #66BB6A; font-weight: bold;">{{ transaction.amount }}</span>
+                    {% else %}
+                        <span style="color: #E57373; font-weight: bold;">{{ transaction.amount }}</span>
+                    {% endif %}
+                  </td>                                
+                  <td>{{transaction.category}}</td>
+                  <td>{{transaction.label}}</td>
+                  <td>{{transaction.account}}</td>
+                  <td>{{transaction.description}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <!-- End Table with stripped rows -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="modal fade" id="addTransactionModal" tabindex="-1" aria-labelledby="addTransactionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTransactionModalLabel">Add New Transaction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'fin-transactions' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Transaction Details</h5>
+                                        
+                                        <div class="mb-3">
+                                            {{ form.date.label_tag }}
+                                            {{ form.date }}
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            {{ form.amount.label_tag }}
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                {{ form.amount }}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            {{ form.category.label_tag }}
+                                            {{ form.category }}
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            {{ form.label.label_tag }}
+                                            {{ form.label }}
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            {{ form.account.label_tag }}
+                                            {{ form.account }}
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            {{ form.description.label_tag }}
+                                            {{ form.description }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Transaction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+  <!-- Improved pagination at bottom -->
+  <div class="d-flex justify-content-center mt-3">
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        {% if transactions.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1" aria-label="First">
+              <span aria-hidden="true">&laquo;&laquo;</span>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ transactions.previous_page_number }}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% endif %}
+
+        {% for num in transactions.paginator.page_range %}
+          {% if transactions.number == num %}
+            <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+          {% elif num > transactions.number|add:'-3' and num < transactions.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+          {% endif %}
+        {% endfor %}
+
+        {% if transactions.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ transactions.next_page_number }}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ transactions.paginator.num_pages }}" aria-label="Last">
+              <span aria-hidden="true">&raquo;&raquo;</span>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+
+  <div class="col-lg-12">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Bar Chart</h5>
+            <canvas id="barChart" style="max-height: 400px;"></canvas>
+            
+            <div id="account_pivot_data" style="display:none;">
+                {{ account_pivot|json_script:"account_pivot_data" }}
+            </div>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    const accountPivot = JSON.parse(document.getElementById('account_pivot_data').textContent);
+                    const labels = Object.keys(accountPivot);
+                    const data = Object.values(accountPivot).map(amount => Math.abs(amount));
+                    const backgroundColors = Object.values(accountPivot).map(amount => amount >= 0 ? 'rgba(66, 133, 54, 0.2)' : 'rgba(244, 67, 54, 0.2)');
+                    const borderColors = Object.values(accountPivot).map(amount => amount >= 0 ? 'rgb(66, 133, 54)' : 'rgb(244, 67, 54)');
+
+                    new Chart(document.querySelector('#barChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Account Totals',
+                                data: data,
+                                backgroundColor: backgroundColors,
+                                borderColor: borderColors,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
+        </div>
+    </div>
+  </div>
+
+  <!-- Script to handle the recurring transaction toggle -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const recurringCheckbox = document.getElementById('transactionRecurring');
+      const frequencySelect = document.getElementById('transactionFrequency');
+      
+      recurringCheckbox.addEventListener('change', function() {
+        frequencySelect.disabled = !this.checked;
+      });
+    });
+  </script>
+{% endblock %}

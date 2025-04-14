@@ -1,0 +1,35 @@
+{% extends "home/base.html" %}
+{% load static %}
+{% block content %}
+
+{{instrument_data}}
+<div class="col-lg-6">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Investments detail</h5>
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Instrument</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for investment in investments_detail%}
+          <tr>
+            <td>{{investment.date|date:"Y-m-d"}}</td>
+            <td>{{investment.instrument.instrument}}</td>
+            <td>{{investment.quantity}}</td>
+            <td>{{investment.price}}</td>
+          </tr>
+          {%endfor%}
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

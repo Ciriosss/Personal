@@ -1,0 +1,350 @@
+{% extends "home/base.html" %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+
+    <div class="pagetitle">
+      <h1>Dashboard - Finance</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item active">Dashboard</li>
+
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+    <section class="section dashboard">
+      <div class="row">
+
+        <!-- Left side columns -->
+        <div class="col-lg-8">
+          <div class="row">
+
+            <!-- Sales Card -->
+            <div class="col-xxl-4 col-md-6">
+              <div class="card info-card finance-card">
+                <div class="card-body">
+                  <h5 class="card-title">Net Activity</h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-credit-card"></i>
+                    </div>
+                    
+                    <div class="ps-3">
+                      <h6>€ {{net_activity}}</h6>
+                      <span class="text-success small pt-1 fw-bold">{{net_activity_change}}%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div><!-- End Sales Card -->
+
+            <!-- Revenue Card -->
+            <div class="col-xxl-4 col-md-6">
+              <div class="card info-card finance-card">
+                <div class="card-body">
+                  <h5 class="card-title">Total Wealth</h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-cash-stack"></i>
+                    </div>
+                    
+                    <div class="ps-3">
+                      <h6> € {{total_wealth}}</h6>
+                      <span class="text-success small pt-1 fw-bold">{{total_wealth_change }} %</span> <span class="text-muted small pt-2 ps-1">increase</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div><!-- End Revenue Card -->
+
+            <!-- Customers Card -->
+            <div class="col-xxl-4 col-xl-12">
+
+              <div class="card info-card finance-card">
+                <div class="card-body">
+                  <h5 class="card-title">Investments</h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    
+                    <div class="ps-3">
+                      <h6>1244</h6>
+                      <span class="text-danger small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">decrease</span>
+
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </div><!-- End Customers Card -->
+
+            <!-- Reports -->
+            <div class="col-12">
+              <div class="card">
+
+                <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                      <h6>Filter</h6>
+                    </li>
+
+                    <li><a class="dropdown-item" href="#">Today</a></li>
+                    <li><a class="dropdown-item" href="#">This Month</a></li>
+                    <li><a class="dropdown-item" href="#">This Year</a></li>
+                  </ul>
+                </div>
+
+                <div class="card-body">
+                  <h5 class="card-title">Total Wealth</h5>
+
+                  <!-- Line Chart -->
+                  <div id="reportsChart"></div>
+                  {{ x_data|json_script:"x_data" }}
+                  {{ y_data|json_script:"y_data" }}
+                  
+                  <script>
+                    document.addEventListener("DOMContentLoaded", () => {
+                      const x_data = JSON.parse(document.getElementById('x_data').textContent);
+                      const y_data = JSON.parse(document.getElementById('y_data').textContent);
+                      
+                      new ApexCharts(document.querySelector("#reportsChart"), {
+                        series: [{
+                          name: 'Total Wealth',
+                          data: y_data,
+                        }],
+                        chart: {
+                          height: 350,
+                          type: 'area',
+                          toolbar: {
+                            show: false
+                          },
+                        },
+                        markers: {
+                          size: 4
+                        },
+                        colors: ['#4154f1', '#2eca6a', '#ff771d'],
+                        fill: {
+                          type: "gradient",
+                          gradient: {
+                            shadeIntensity: 1,
+                            opacityFrom: 0.3,
+                            opacityTo: 0.4,
+                            stops: [0, 90, 100]
+                          }
+                        },
+                        dataLabels: {
+                          enabled: false
+                        },
+                        stroke: {
+                          curve: 'smooth',
+                          width: 2
+                        },
+                        xaxis: {
+                          type: 'datetime',
+                          categories: x_data,  
+                        },
+                        tooltip: {
+                          x: {
+                            format: 'dd/MM/yy HH:mm'
+                          },
+                        }
+                      }).render();
+                    });
+                  </script>
+                  <!-- End Line Chart -->
+
+                </div>
+
+              </div>
+            </div><!-- End Reports -->
+
+            <!-- Recent Sales -->
+            <div class="col-12">
+              <div class="card recent-sales overflow-auto">
+                <div class="card-body">
+                  <h5 class="card-title">Main transaction</h5>
+
+                  <table class="table table-borderless datatable">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Label</th>
+                        <th scope="col">Account</th>
+                        <th scope="col">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for transaction in transactions %}
+                      <tr>
+                          <th scope="row"><a href="#">{{transaction.id}}</a></th>
+                          <td>{{ transaction.date|date:"Y-m-d" }}</td>
+                          <td>{{transaction.amount}}</td>
+                          <td>{{transaction.category}}</td>
+                          <td><span class="badge bg-success">{{transaction.label}}</span></td>
+                          <td>{{transaction.account}}</td>
+                          <td>{{transaction.description}}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+
+                </div>
+
+              </div>
+            </div><!-- End Recent Sales -->
+
+          </div>
+        </div><!-- End Left side columns -->
+
+        <!-- Right side columns -->
+        <div class="col-lg-4">
+
+          <!-- Recent Activity -->
+          <div class="card">
+            <div class="filter">
+              <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                <li class="dropdown-header text-start">
+                  <h6>Filter</h6>
+                </li>
+
+                <li><a class="dropdown-item" href="#">Today</a></li>
+                <li><a class="dropdown-item" href="#">This Month</a></li>
+                <li><a class="dropdown-item" href="#">This Year</a></li>
+              </ul>
+            </div>
+
+            <div class="card-body">
+              <h5 class="card-title">Recent Activity</h5>
+              <div class="activity">
+
+                {% for activity in activities %}
+                <div class="activity-item d-flex">
+                  <div class="activite-label">{{activity.date|naturaltime}}</div>
+                  <i class='bi bi-circle-fill activity-badge 
+                  {% if "insert" in activity.type|lower %}text-success
+                  {% elif "edit" in activity.type|lower %}text-primary
+                  {% else %}text-danger{% endif %} align-self-start'>
+               </i>
+                  <div class="activity-content">
+                    {{activity.type}}
+                  </div>
+                </div><!-- End activity item-->
+              
+                {% endfor %}
+              </div>
+
+            </div>
+          </div><!-- End Recent Activity -->
+
+          <!-- Wallet Composition -->
+          <div class="card">
+            <div class="card-body pb-0">
+                <h5 class="card-title">Wallet Composition</h5>
+                
+                <!-- Chart container -->
+                <div id="trafficChart" style="min-height: 400px;" class="echart"></div>
+                
+                <!-- Hidden element containing JSON data (Django's json_script) -->
+                <div id="wallet_composition" style="display:none;">
+                    {{ wallet_composition|json_script:"wallet_composition" }}
+                </div>
+        
+                <script>
+                    document.addEventListener("DOMContentLoaded", () => {
+                    
+                    const dataElement = document.getElementById("wallet_composition");
+                    if (!dataElement) {
+                        console.error("wallet_composition element not found!");
+                        return;
+                    }
+
+                    try {
+                        const walletData = JSON.parse(dataElement.textContent);
+                        console.log("Parsed wallet data:", walletData);
+
+                        if (!walletData || Object.keys(walletData).length === 0) {
+                            console.error("Wallet data is empty!");
+                            return;
+                        }
+
+                        // Convert walletData into ECharts pie chart format
+                        const pieData = Object.keys(walletData).map(key => ({
+                            value: walletData[key],
+                            name: key
+                        }));
+
+                        // Calculate total for percentage calculation
+                        const total = pieData.reduce((sum, item) => sum + item.value, 0);
+
+                        // Initialize the pie chart
+                        const chart = echarts.init(document.getElementById("trafficChart"));
+                        chart.setOption({
+                            tooltip: {
+                                trigger: 'item',
+                                formatter: '{a} <br/>{b}: {c} - ({d}%)'
+                            },
+                            legend: {
+                                top: '5%',
+                                left: 'center'
+                            },
+                            series: [{
+                                name: 'Wallet Composition',
+                                type: 'pie',
+                                radius: ['40%', '70%'],
+                                avoidLabelOverlap: false,
+                                label: {
+                                    show: false,
+                                    position: 'center'
+                                },
+                                emphasis: {
+                                    label: {
+                                        show: true,
+                                        fontSize: '18',
+                                        fontWeight: 'bold',
+                                        formatter: function(params) {
+                                            // Calculate percentage
+                                            const percentage = ((params.value / total) * 100).toFixed(2);
+                                            return `${params.name}\n${percentage}%`;
+                                        }
+                                    }
+                                },
+                                labelLine: {
+                                    show: false
+                                },
+                                data: pieData 
+                            }]
+                        });
+
+                        // Handle window resize
+                        window.addEventListener('resize', function() {
+                            chart.resize();
+                        });
+
+                    } catch (error) {
+                        console.error("Error:", error);
+                    }
+                });
+              </script>
+            </div>
+        </div>
+            </div>
+          </div><!-- End Website Traffic -->
+
+
+      </div>
+    </section>
+
+  {% endblock %}

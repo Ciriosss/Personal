@@ -1,0 +1,86 @@
+{% extends "home/base.html" %}
+{% load static %}
+{% block content %}
+<div class="container-fluid">
+    <!-- Project Selection -->
+    <div class="d-flex justify-content-center my-3">
+        <button class="btn btn-primary mx-2" onclick="loadProject('Blog')">Blog</button>
+        <button class="btn btn-secondary mx-2" onclick="loadProject('E-commerce')">E-commerce</button>
+        <button class="btn btn-secondary mx-2" onclick="loadProject('Portfolio')">Portfolio</button>
+    </div>
+
+    <div class="row">
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <h2 class="my-4" id="projectTitle">Project Steps</h2>
+            <ul class="timeline" id="projectSteps">
+                <!-- Steps will be loaded here dynamically -->
+            </ul>
+        </main>
+    </div>
+</div>
+
+<style>
+    .timeline {
+        list-style: none;
+        padding: 0;
+        position: relative;
+    }
+    .timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 20px;
+        width: 4px;
+        height: 100%;
+        background: #007bff;
+    }
+    .timeline li {
+        position: relative;
+        margin-bottom: 20px;
+        padding-left: 40px;
+    }
+    .timeline li::before {
+        content: '';
+        position: absolute;
+        left: 10px;
+        width: 20px;
+        height: 20px;
+        background: #007bff;
+        border-radius: 50%;
+    }
+</style>
+
+<script>
+    const projects = {
+        'Blog': [
+            { step: "Create the website", substeps: ["Set up Django", "Design layout", "Configure database"] },
+            { step: "Write content", substeps: ["Draft articles", "Edit content", "Add images"] },
+            { step: "Publish", substeps: ["Deploy to server", "Set domain", "Announce launch"] },
+            { step: "Update", substeps: ["Regular blog posts", "Fix bugs", "Improve SEO"] }
+        ],
+        'E-commerce': [
+            { step: "Set up platform", substeps: ["Choose CMS", "Install plugins", "Design UI"] },
+            { step: "Add products", substeps: ["Upload images", "Write descriptions", "Set prices"] },
+            { step: "Launch store", substeps: ["Configure payments", "Test purchases", "Marketing"] }
+        ]
+    };
+
+    function loadProject(projectName) {
+        document.getElementById("projectTitle").innerText = `Project: ${projectName}`;
+        const stepsContainer = document.getElementById("projectSteps");
+        stepsContainer.innerHTML = "";
+        projects[projectName].forEach((step, index) => {
+            let substepsHtml = step.substeps.map(sub => `<li>${sub}</li>`).join('');
+            stepsContainer.innerHTML += `
+                <li>
+                    <h5>${index + 1}. ${step.step}</h5>
+                    <ul>${substepsHtml}</ul>
+                </li>
+            `;
+        });
+    }
+    loadProject('Blog'); // Load default project
+</script>
+{% endblock %}
+
