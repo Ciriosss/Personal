@@ -6,7 +6,7 @@
         <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
           <div class="card z-index-0">
             <div class="card-header text-center pt-4">
-              <h5>Register with</h5>
+              <h5>Sign In with</h5>
             </div>
             <div class="row px-xl-5 px-sm-4 px-3">
               <div class="col-3 ms-auto px-1">
@@ -56,14 +56,11 @@
             <div class="card-body">
               <form method="POST" action="{% url 'dashboard' %}">
                 {% csrf_token %}
-
                 {{ form|crispy }}
-
-                </div>
                 <div class="text-center">
-                  <button type="submit" class="btn bg-gradient-dark w-100 my-4 mb-2"  type="submit" >Sign up</button>
+                  <button type="submit" class="btn bg-gradient-dark w-100 my-4 mb-2"  type="submit" >Sign in</button>
                 </div>
-                <p class="text-sm mt-3 mb-0">Don't have an account? <a href="{% url 'sign-up' %}" class="text-dark font-weight-bolder">Sign in</a></p>
+                <p class="text-sm mt-3 mb-0">Don't have an account? <a href="{% url 'sign-up' %}" class="text-dark font-weight-bolder">Sign up</a></p>
               </form>
             </div>
         </div>
