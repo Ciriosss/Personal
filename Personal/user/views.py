@@ -10,7 +10,7 @@ def sign_up(request):
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request,'Congratulations {}! your account has been created successfully, now you are able to log-in'.format(username))
-            return redirect('dashbooard/')
+            return redirect('dashboard')
     else:
         form = UserRegisterForm()
     return render(request, 'user/sign-up.html', {'form': form})

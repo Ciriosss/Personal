@@ -1,6 +1,8 @@
 {% extends "dashboard/main.html" %}
 {% load static %}
 {% block content %}
+
+
   <main class="main-content position-relative border-radius-lg ">
     <!-- Navbar -->
     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur" data-scroll="false">
@@ -126,7 +128,7 @@
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">Cash Flow</p>
                     <h5 class="font-weight-bolder">
-                      $53,000
+                      € {{net_activity}}
                     </h5>
                     <p class="mb-0">
                       <span class="text-success text-sm font-weight-bolder">+55%</span>
