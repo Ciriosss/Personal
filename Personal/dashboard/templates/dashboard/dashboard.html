@@ -1,5 +1,6 @@
 {% extends "dashboard/main.html" %}
 {% load static %}
+{% load mathfilters %}
 {% block content %}
 
 
@@ -131,8 +132,14 @@
                       € {{net_activity}}
                     </h5>
                     <p class="mb-0">
-                      <span class="text-success text-sm font-weight-bolder">+55%</span>
-                      since yesterday
+                      {%if money_to_budget > 0%}
+                          <span class="text-success text-sm font-weight-bolder">+{{money_to_budget}}</span>
+                          to budget
+                      {% else %}
+                         <span class="text-danger text-sm font-weight-bolder">+{{money_to_budget|abs}}</span>
+                          over budget
+                      {% endif %}
+                       
                     </p>
                   </div>
                 </div>
@@ -151,13 +158,18 @@
               <div class="row">
                 <div class="col-8">
                   <div class="numbers">
-                    <p class="text-sm mb-0 text-uppercase font-weight-bold">Investment Profit</p>
+                    <p class="text-sm mb-0 text-uppercase font-weight-bold">Current Wealth</p>
                     <h5 class="font-weight-bolder">
-                      2,300
+                      € {{current_wealth}}
                     </h5>
                     <p class="mb-0">
-                      <span class="text-success text-sm font-weight-bolder">+3%</span>
-                      since last week
+                      {%if change_prc > 0%}
+                          <span class="text-success text-sm font-weight-bolder">+{{change_prc}}% </span>
+                          since last month
+                      {% else %}
+                         <span class="text-danger text-sm font-weight-bolder">{{change_prc}}</span>
+                          since last month
+                      {% endif %}
                     </p>
                   </div>
                 </div>
@@ -176,7 +188,7 @@
               <div class="row">
                 <div class="col-8">
                   <div class="numbers">
-                    <p class="text-sm mb-0 text-uppercase font-weight-bold">Total Wealth</p>
+                    <p class="text-sm mb-0 text-uppercase font-weight-bold">Investment Profit</p>
                     <h5 class="font-weight-bolder">
                       +3,462
                     </h5>
