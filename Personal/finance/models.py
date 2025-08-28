@@ -6,10 +6,10 @@ from user.models import Profile
 
 class AssetClass(models.Model):
     id = models.AutoField(primary_key=True)
-    account_class = models.CharField(max_length=255)
+    asset_class_name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.account_class
+        return self.asset_class_name
 
 class Instrument(models.Model):
     id = models.AutoField(primary_key=True)
@@ -28,7 +28,7 @@ class Account(models.Model):
     account_class = models.ForeignKey(AssetClass, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.id
+        return self.account_name
     
 class Investment(models.Model):
     id = models.AutoField(primary_key=True)
@@ -47,7 +47,7 @@ class TransactionCategory(models.Model):
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     category = models.CharField(max_length=255)
     def __str__(self):
-        return self.id
+        return self.category
     
 class Label(models.Model):
     id = models.AutoField(primary_key=True)
@@ -58,14 +58,13 @@ class Label(models.Model):
         return self.label
        
 class Transaction(models.Model):
-    id = models.AutoField(primary_key=True)
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     date = models.DateTimeField()
     entry_date = models.DateTimeField(default=timezone.now)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    category_id = models.ForeignKey(TransactionCategory,on_delete=models.CASCADE)
-    label_id = models.ForeignKey(Label,on_delete = models.CASCADE, blank=True, null=True)
-    account_id = models.ForeignKey(Account,on_delete=models.CASCADE)
+    category_id = models.ForeignKey(TransactionCategory, on_delete=models.CASCADE)
+    label_id = models.ForeignKey(Label, on_delete=models.SET_NULL, blank=True, null=True)  # safer
+    account_id = models.ForeignKey(Account, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):
