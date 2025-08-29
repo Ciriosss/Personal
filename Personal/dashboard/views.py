@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum,Mult
+from django.db.models import Sum,F,Max, OuterRef, Subquery
+from decimal import Decimal
 from finance.models import *
 import datetime
 
@@ -17,20 +18,25 @@ def dashboard(request):
         prior_month = current_month - 1
         prior_year = current_year
 
+    # CARD 1 : Net Activity (Transactions) this month
     net_activity = Transaction.objects.filter(author=request.user, date__year=current_year, date__month=current_month).aggregate(net_activity = Sum('amount'))['net_activity'] or 0
     budget = 500
     money_to_budget = net_activity + budget
-    
+
+    # CARD 2 : Change in Wealth (Wallet) this month vs last month
     prior_wealth = Wallet.objects.filter(author=request.user,date__year=prior_year, date__month=prior_month).aggregate(prior_wealth = Sum('amount'))['prior_wealth'] or 0
     current_wealth = (Wallet.objects.filter(author=request.user,date__year=current_year, date__month=current_month).aggregate(current_wealth = Sum('amount'))['current_wealth'] or 0) + net_activity
     change_prc = round(((current_wealth - prior_wealth) / prior_wealth * 100) if prior_wealth != 0 else 0,0)
 
+    #CARD 3 : INVESTMENT PROFIT/LOSS (Investments)
+    investment_cost = Investment.objects.filter(author=request.user).aggregate(investment_cost=Sum(F('price') * F('quantity')))['investment_cost'] or 0
   
     context = {
         'net_activity': net_activity, 
         'current_wealth': current_wealth,
         'money_to_budget':money_to_budget,
-        'change_prc':change_prc
+        'change_prc':change_prc,
+        'investment_cost': investment_cost,
     }
 
     return render (request,'dashboard/dashboard.html',context)
