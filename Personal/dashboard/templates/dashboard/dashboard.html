@@ -2,8 +2,6 @@
 {% load static %}
 {% load mathfilters %}
 {% block content %}
-
-
   <main class="main-content position-relative border-radius-lg ">
     <!-- Navbar -->
     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur" data-scroll="false">
@@ -13,7 +11,7 @@
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-white" href="javascript:;">Pages</a></li>
             <li class="breadcrumb-item text-sm text-white active" aria-current="page">Dashboard</li>
           </ol>
-          <h3 class="font-weight-bolder text-white mb-0">Finance overview - September</h3>
+          <h3 class="font-weight-bolder text-white mb-0">Finance overview - {{current_month_name}} {{current_year}}</h3>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -198,6 +196,7 @@
                       {% else %}
                          <span class="text-danger text-sm font-weight-bolder">{{investment_profit_prc}}</span>
                       {% endif %}
+                      capital c
                     </p>
                   </div>
                 </div>
@@ -221,7 +220,7 @@
                       {{population_perc}}
                     </h5>
                     <p class="mb-0">
-                      <span class="text-success text-sm font-weight-bolder">+5%</span> than last month
+                      <span class="text-success text-sm font-weight-bolder">100.000</span> for the top 1%
                     </p>
                   </div>
                 </div>
@@ -244,9 +243,9 @@
                 <i class="fa fa-arrow-up text-success"></i>
               </p>
             </div>
-            <div class="card-body p-3">
+            <div class="card-body p-3" style="height: 400px;">
               <div class="chart">
-                <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
+                <canvas id="chart-line" class="chart-canvas" height="380"></canvas>
               </div>
             </div>
           </div>
@@ -543,4 +542,28 @@
       </footer>
     </div>
   </main>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    var ctx1 = document.getElementById("chart-line").getContext("2d");
+
+    new Chart(ctx1, {
+      type: "pie",
+      data: {
+        labels: [
+          {% for item in wallet_data%}
+             '{{item.date|date:"M"}}'
+          {% endfor%} ],
+        datasets: [{
+          label: "Mobile apps",
+          data: [
+          {% for item in wallet_data%}
+             '{{item.amount}}'
+          {% endfor%}],
+          maxBarThickness: 6
+        }],
+      }
+    });
+  </script>
+
+  
 {% endblock %}
