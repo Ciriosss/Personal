@@ -33,6 +33,7 @@ def dashboard(request):
     investment_value = investment_value_function(request) or 0
 
     investment_profit = investment_value-investment_cost
+    investment_profit_prc = round(investment_profit / investment_cost * 100,2) if investment_cost !=0 else 0
 
     #CARD 4 : TOP % OF POPULATION
 
@@ -45,6 +46,7 @@ def dashboard(request):
         'change_prc':change_prc,
         'investment_cost': investment_cost,
         'investment_profit':investment_profit,
+        'investment_profit_prc':investment_profit_prc,
         'population_perc':population_perc
     }
 
