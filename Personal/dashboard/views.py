@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum,F,Max, OuterRef, Subquery
-from decimal import Decimal
+from django.db.models import Sum,F
+from Personal.utils import investment_value_function
 from finance.models import *
 import datetime
 
@@ -30,6 +30,18 @@ def dashboard(request):
 
     #CARD 3 : INVESTMENT PROFIT/LOSS (Investments)
     investment_cost = Investment.objects.filter(author=request.user).aggregate(investment_cost=Sum(F('price') * F('quantity')))['investment_cost'] or 0
+    investment_value = investment_value_function(request) or 0
+
+    investment_profit = investment_value-investment_cost
+
+
+
+
+
+
+    
+
+
   
     context = {
         'net_activity': net_activity, 
@@ -37,6 +49,7 @@ def dashboard(request):
         'money_to_budget':money_to_budget,
         'change_prc':change_prc,
         'investment_cost': investment_cost,
+        'investment_profit':investment_profit
     }
 
     return render (request,'dashboard/dashboard.html',context)
