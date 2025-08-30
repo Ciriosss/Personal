@@ -1,5 +1,7 @@
 from django.db.models import Sum, F, Subquery, OuterRef
 from finance.models import *
+from scipy.stats import norm
+
 
 def investment_value_function(request):
 
@@ -20,4 +22,11 @@ def investment_value_function(request):
 
     return investment_value
 
+def percentage_population_function(current_wealth):
+    mu = 50000
+    sigma = 15000
 
+    distribution_perc = norm.cdf(float(current_wealth), mu, sigma) * 100
+    population_perc = round(100 - round(distribution_perc, 2),2)
+
+    return population_perc

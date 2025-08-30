@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum,F
-from Personal.utils import investment_value_function
+from Personal.utils import *
 from finance.models import *
 import datetime
 
@@ -34,22 +34,18 @@ def dashboard(request):
 
     investment_profit = investment_value-investment_cost
 
+    #CARD 4 : TOP % OF POPULATION
 
+    population_perc = percentage_population_function(current_wealth)
 
-
-
-
-    
-
-
-  
     context = {
         'net_activity': net_activity, 
         'current_wealth': current_wealth,
         'money_to_budget':money_to_budget,
         'change_prc':change_prc,
         'investment_cost': investment_cost,
-        'investment_profit':investment_profit
+        'investment_profit':investment_profit,
+        'population_perc':population_perc
     }
 
     return render (request,'dashboard/dashboard.html',context)
