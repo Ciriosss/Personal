@@ -3,6 +3,7 @@ from django.contrib import messages
 from .forms import UserRegisterForm
 
 
+
 def sign_up(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)

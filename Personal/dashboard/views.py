@@ -54,9 +54,6 @@ def dashboard(request):
     wallet_data = Wallet.objects.filter(author=request.user)
 
 
-
-
-
     context = {
         'current_month_name':current_month_name,
         'current_year':current_year,
