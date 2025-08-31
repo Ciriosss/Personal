@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.db.models.functions import TruncMonth
 from django.db.models import Sum,F
 from Personal.utils import *
 from finance.models import *
@@ -33,7 +34,7 @@ def dashboard(request):
 
     #CARD 2 : Change in Wealth (Wallet) this month vs last month
     prior_wealth = Wallet.objects.filter(author=request.user,date__year=prior_year, date__month=prior_month).aggregate(prior_wealth = Sum('amount'))['prior_wealth'] or 0
-    current_wealth = (Wallet.objects.filter(author=request.user,date__year=current_year, date__month=current_month).aggregate(current_wealth = Sum('amount'))['current_wealth'] or 0) + net_activity
+    current_wealth = prior_wealth + net_activity
     change_prc = round(((current_wealth - prior_wealth) / prior_wealth * 100) if prior_wealth != 0 else 0,0)
 
     #CARD 3 : INVESTMENT PROFIT/LOSS (Investments)
@@ -51,8 +52,9 @@ def dashboard(request):
     ##################################
 
     #WEALTH EVOLUTION
-    wallet_data = Wallet.objects.filter(author=request.user)
+    wallet_data = Wallet.objects.filter(author=request.user).annotate(month=TruncMonth('date')).values('month').annotate(total_amount=Sum('amount')).order_by('month')
 
+    
 
     context = {
         'current_month_name':current_month_name,

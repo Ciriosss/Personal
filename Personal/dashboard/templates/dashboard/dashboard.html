@@ -542,28 +542,65 @@
       </footer>
     </div>
   </main>
-
-  <script>
-    var ctx1 = document.getElementById("chart-line").getContext("2d");
-
-    new Chart(ctx1, {
-      type: "pie",
-      data: {
-        labels: [
-          {% for item in wallet_data%}
-             '{{item.date|date:"M"}}'
-          {% endfor%} ],
-        datasets: [{
-          label: "Mobile apps",
-          data: [
-          {% for item in wallet_data%}
-             '{{item.amount}}'
-          {% endfor%}],
-          maxBarThickness: 6
-        }],
-      }
-    });
-  </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  
+<script>
+var ctx1 = document.getElementById("chart-line").getContext("2d");
+new Chart(ctx1, {
+  type: "line", 
+  data: {
+    labels: [
+      {% for item in wallet_data %}
+         '{{ item.date|date:"M Y" }}'{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ],
+    datasets: [{
+      label: "Wealth Evolution",
+      data: [
+        {% for item in wallet_data %}
+           {{ item.total_amount }}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ],
+      borderColor: 'rgb(75, 192, 192)',
+      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+      tension: 0.4,
+      fill: true
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: false,
+        ticks: {
+          callback: function(value) {
+            return '€' + value.toLocaleString();
+          }
+        }
+      },
+      x: {
+        display: true,
+        title: {
+          display: true,
+          text: 'Month'
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top'
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return context.dataset.label + ': €' + context.raw.toLocaleString();
+          }
+        }
+      }
+    }
+  }
+});
+</script>
+
 {% endblock %}
