@@ -54,7 +54,8 @@ def dashboard(request):
     #WEALTH EVOLUTION
     wallet_data = Wallet.objects.filter(author=request.user).annotate(month=TruncMonth('date')).values('month').annotate(total_amount=Sum('amount')).order_by('month')
 
-    
+    #WALLET COMPOSITION
+    wallet_composition = Wallet.objects.filter(author=request.user,date__year=current_year, date__month=current_month).values(asset_class = F('account_id__account_class__asset_class_name')).annotate(total_amount=Sum('amount')).order_by('account_id__account_class__asset_class_name')
 
     context = {
         'current_month_name':current_month_name,
@@ -67,7 +68,8 @@ def dashboard(request):
         'investment_profit':investment_profit,
         'investment_profit_prc':investment_profit_prc,
         'population_perc':population_perc,
-        'wallet_data':wallet_data
+        'wallet_data':wallet_data,
+        'wallet_composition':wallet_composition
     }
 
     return render (request,'dashboard/dashboard.html',context)

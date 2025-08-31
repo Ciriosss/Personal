@@ -47,7 +47,6 @@
                     <div class="d-flex py-1">
                       <div class="my-auto">
                         <img src="{% static 'dashboard/assets/img/team-2.jpg' %}" class="avatar avatar-sm  me-3 ">
-                        
                       </div>
                       <div class="d-flex flex-column justify-content-center">
                         <h6 class="text-sm font-weight-normal mb-1">
@@ -137,7 +136,6 @@
                          <span class="text-danger text-sm font-weight-bolder">+{{money_to_budget|abs}}</span>
                           over budget
                       {% endif %}
-                       
                     </p>
                   </div>
                 </div>
@@ -251,51 +249,28 @@
           </div>
         </div>
         <div class="col-lg-5">
-          <div class="card card-carousel overflow-hidden h-100 p-0">
-            <div id="carouselExampleCaptions" class="carousel slide h-100" data-bs-ride="carousel">
-              <div class="carousel-inner border-radius-lg h-100">
-                <div class="carousel-item h-100 active"  
-                  style="background-image: url('{% static 'dashboard/assets/img/carousel-1.jpg' %}'); background-size: cover;">
-                  <div class="carousel-caption d-none d-md-block bottom-0 text-start start-0 ms-5">
-                    <div class="icon icon-shape icon-sm bg-white text-center border-radius-md mb-3">
-                      <i class="ni ni-camera-compact text-dark opacity-10"></i>
-                    </div>
-                    <h5 class="text-white mb-1">Get started with Argon</h5>
-                    <p>There’s nothing I really wanted to do in life that I wasn’t able to get good at.</p>
-                  </div>
-                </div>
-                <div class="carousel-item h-100" 
-                    style="background-image: url('{% static 'dashboard/assets/img/carousel-2.jpg' %}');background-size: cover;">
-                  <div class="carousel-caption d-none d-md-block bottom-0 text-start start-0 ms-5">
-                    <div class="icon icon-shape icon-sm bg-white text-center border-radius-md mb-3">
-                      <i class="ni ni-bulb-61 text-dark opacity-10"></i>
-                    </div>
-                    <h5 class="text-white mb-1">Faster way to create web pages</h5>
-                    <p>That’s my skill. I’m not really specifically talented at anything except for the ability to learn.</p>
-                  </div>
-                </div>
-                <div class="carousel-item h-100" 
-                  style="background-image: url('{% static 'dashboard/assets/img/carousel-3.jpg' %}');background-size: cover;">
-                  <div class="carousel-caption d-none d-md-block bottom-0 text-start start-0 ms-5">
-                    <div class="icon icon-shape icon-sm bg-white text-center border-radius-md mb-3">
-                      <i class="ni ni-trophy text-dark opacity-10"></i>
-                    </div>
-                    <h5 class="text-white mb-1">Share with us your design tips!</h5>
-                    <p>Don’t be afraid to be wrong because you can’t learn anything from a compliment.</p>
-                  </div>
-                </div>
-              </div>
-              <button class="carousel-control-prev w-5 me-3" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-              </button>
-              <button class="carousel-control-next w-5 me-3" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-              </button>
-            </div>
-          </div>
+  <div class="card card-carousel overflow-hidden h-100 p-0">
+    <div class="card z-index-2 h-100">
+      <div class="card-header pb-0 pt-3 bg-transparent">
+        <h6 class="text-capitalize">Wallet Composition</h6>
+      </div>
+      <div class="card-body p-4" style="height: 400px;">
+        <div class="chart h-100">
+          <canvas id="wallet-composition" class="chart-canvas w-100 h-100"></canvas>
         </div>
+      </div>
+    </div>
+
+    <button class="carousel-control-prev w-5 me-3" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next w-5 me-3" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+</div>
       </div>
       <div class="row mt-4">
         <div class="col-lg-7 mb-lg-0 mb-4">
@@ -601,6 +576,65 @@ new Chart(ctx1, {
     }
   }
 });
+</script>
+<script>
+  
+var ctx1 = document.getElementById("wallet-composition").getContext("2d");
+
+// Define base colors (darker shades)
+const baseColors = [
+  'rgb(255, 99, 132)',   // red
+  'rgb(54, 162, 235)',   // blue
+  'rgb(255, 206, 86)',   // yellow
+  'rgb(75, 192, 192)',   // teal
+  'rgb(153, 102, 255)',  // purple
+  'rgb(255, 159, 64)'    // orange
+];
+
+// Generate lighter versions for background
+const backgroundColors = baseColors.map(c => c.replace('rgb', 'rgba').replace(')', ', 0.4)'));
+
+new Chart(ctx1, {
+  type: "doughnut",   // 👈 doughnut instead of pie
+  data: {
+    labels: [
+      {% for item in wallet_composition %}
+         '{{ item.asset_class }}'{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ],
+    datasets: [{
+      label: "Wallet Composition",
+      data: [
+        {% for item in wallet_composition %}
+           {{ item.total_amount }}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ],
+      backgroundColor: backgroundColors,  // light fill
+      borderColor: baseColors,            // dark border
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: "60%",   // 👈 creates the hole in the center
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top'
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return context.label + ': €' + context.raw.toLocaleString();
+          }
+        }
+      }
+    }
+  }
+});
+
+
 </script>
 
 {% endblock %}
