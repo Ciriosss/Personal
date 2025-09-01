@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models.functions import TruncMonth
-from django.db.models import Sum,F
+from django.db.models import Sum,F,Count
 from Personal.utils import *
 from finance.models import *
 import datetime
@@ -58,7 +58,13 @@ def dashboard(request):
     wallet_composition_assetclass = Wallet.objects.filter(author=request.user,date__year=current_year, date__month=current_month).values(asset_class = F('account_id__account_class__asset_class_name')).annotate(total_amount=Sum('amount')).order_by('account_id__account_class__asset_class_name')
 
     #WALLET COMPOSITION BY ASSET CLASS
-    wallet_composition_account = Wallet.objects.filter(author=request.user,date__year=current_year, date__month=current_month) 
+    wallet_composition_account = Wallet.objects.filter(author=request.user,date__year=current_year, date__month=current_month)
+
+    # TOP 4 CATEGORY
+
+    categories_recap = Transaction.objects.filter(author=request.user,date__year=current_year, date__month=current_month).values('category_id__category').annotate(total_amount=Sum('amount')).annotate(count=Count('amount')).order_by('-total_amount')[:4]
+    
+    
 
     context = {
         'current_month_name':current_month_name,
@@ -73,7 +79,8 @@ def dashboard(request):
         'population_perc':population_perc,
         'wallet_data':wallet_data,
         'wallet_composition_assetclass':wallet_composition_assetclass,
-        'wallet_composition_account':wallet_composition_account
+        'wallet_composition_account':wallet_composition_account,
+        'categories_recap':categories_recap
     }
 
     return render (request,'dashboard/dashboard.html',context)
