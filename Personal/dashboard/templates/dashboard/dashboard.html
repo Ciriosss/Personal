@@ -11,7 +11,7 @@
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-white" href="javascript:;">Pages</a></li>
             <li class="breadcrumb-item text-sm text-white active" aria-current="page">Dashboard</li>
           </ol>
-          <h3 class="font-weight-bolder text-white mb-0">Finance overview - {{current_month_name}} {{current_year}}</h3>
+          <h3 class="font-weight-bolder text-white mb-0">Finance overview - {{current_month_name}} {{current_year}} </h3>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -249,28 +249,49 @@
           </div>
         </div>
         <div class="col-lg-5">
-  <div class="card card-carousel overflow-hidden h-100 p-0">
-    <div class="card z-index-2 h-100">
-      <div class="card-header pb-0 pt-3 bg-transparent">
-        <h6 class="text-capitalize">Wallet Composition</h6>
-      </div>
-      <div class="card-body p-4" style="height: 400px;">
-        <div class="chart h-100">
-          <canvas id="wallet-composition" class="chart-canvas w-100 h-100"></canvas>
+          <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+<div class="carousel-inner">
+    
+    <div class="carousel-item active">
+      <div class="card card-carousel overflow-hidden h-100 p-0">
+        <div class="card z-index-2 h-100">
+          <div class="card-header pb-0 pt-3 bg-transparent">
+            <h6 class="text-capitalize">Wallet Composition By Asset Class</h6>
+          </div>
+          <div class="card-body p-4 d-flex justify-content-center align-items-center" style="height: 400px;">
+            <div class="chart" style="width: 320px; height: 320px;">
+              <canvas id="assetclass_graph" class="chart-canvas w-100 h-100"></canvas>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+    
+    <!-- Remove 'active' class from this one -->
+    <div class="carousel-item">
+      <div class="card card-carousel overflow-hidden h-100 p-0">
+        <div class="card z-index-2 h-100">
+          <div class="card-header pb-0 pt-3 bg-transparent">
+            <h6 class="text-capitalize">Wallet Composition By Account</h6>
+          </div>
+          <div class="card-body p-4 d-flex justify-content-center align-items-center" style="height: 400px;">
+            <div class="chart" style="width: 320px; height: 320px;">
+              <canvas id="account_graph" class="chart-canvas w-100 h-100"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
 
-    <button class="carousel-control-prev w-5 me-3" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next w-5 me-3" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
+  <!-- Optional: Indicators -->
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" style="filter: invert(1) sepia(1) hue-rotate(220deg) saturate(2);"></button>
+    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1"style="filter: invert(1) sepia(1) hue-rotate(220deg) saturate(2);"></button>
   </div>
 </div>
+        </div>
+      </div>
       </div>
       <div class="row mt-4">
         <div class="col-lg-7 mb-lg-0 mb-4">
@@ -519,8 +540,8 @@
   </main>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-var ctx1 = document.getElementById("chart-line").getContext("2d");
-new Chart(ctx1, {
+var ctx0 = document.getElementById("chart-line").getContext("2d");
+new Chart(ctx0, {
   type: "line", 
   data: {
     labels: [
@@ -563,7 +584,7 @@ new Chart(ctx1, {
     },
     plugins: {
       legend: {
-        display: true,
+        display: false,
         position: 'top'
       },
       tooltip: {
@@ -576,51 +597,47 @@ new Chart(ctx1, {
     }
   }
 });
-</script>
-<script>
-  
-var ctx1 = document.getElementById("wallet-composition").getContext("2d");
+</script><script>
+var ctx1 = document.getElementById("assetclass_graph").getContext("2d");
 
-// Define base colors (darker shades)
-const baseColors = [
-  'rgb(255, 99, 132)',   // red
-  'rgb(54, 162, 235)',   // blue
-  'rgb(255, 206, 86)',   // yellow
-  'rgb(75, 192, 192)',   // teal
-  'rgb(153, 102, 255)',  // purple
-  'rgb(255, 159, 64)'    // orange
+const baseColors1 = [
+  'rgb(255, 99, 132)',   
+  'rgb(54, 162, 235)',  
+  'rgb(255, 206, 86)',   
+  'rgb(75, 192, 192)',   
+  'rgb(153, 102, 255)',  
+  'rgb(255, 159, 64)'    
 ];
 
-// Generate lighter versions for background
-const backgroundColors = baseColors.map(c => c.replace('rgb', 'rgba').replace(')', ', 0.4)'));
+const backgroundColors1 = baseColors1.map(c => c.replace('rgb', 'rgba').replace(')', ', 0.4)'));
 
 new Chart(ctx1, {
-  type: "doughnut",   // 👈 doughnut instead of pie
+  type: "doughnut",   
   data: {
     labels: [
-      {% for item in wallet_composition %}
+      {% for item in wallet_composition_assetclass %}
          '{{ item.asset_class }}'{% if not forloop.last %},{% endif %}
       {% endfor %}
     ],
     datasets: [{
       label: "Wallet Composition",
       data: [
-        {% for item in wallet_composition %}
+        {% for item in wallet_composition_assetclass %}
            {{ item.total_amount }}{% if not forloop.last %},{% endif %}
         {% endfor %}
       ],
-      backgroundColor: backgroundColors,  // light fill
-      borderColor: baseColors,            // dark border
+      backgroundColor: backgroundColors1,  
+      borderColor: baseColors1,           
       borderWidth: 2
     }]
   },
   options: {
     responsive: true,
     maintainAspectRatio: false,
-    cutout: "60%",   // 👈 creates the hole in the center
+    cutout: "60%",   
     plugins: {
       legend: {
-        display: true,
+        display: false,
         position: 'top'
       },
       tooltip: {
@@ -633,8 +650,60 @@ new Chart(ctx1, {
     }
   }
 });
+</script>
 
+<script>
+var ctx2 = document.getElementById("account_graph").getContext("2d");
 
+const baseColors2 = [
+  'rgb(255, 99, 132)',   
+  'rgb(54, 162, 235)',   
+  'rgb(255, 206, 86)',  
+  'rgb(75, 192, 192)',   
+  'rgb(153, 102, 255)',  
+  'rgb(255, 159, 64)'    
+];
+
+const backgroundColors2 = baseColors2.map(c => c.replace('rgb', 'rgba').replace(')', ', 0.4)'));
+
+new Chart(ctx2, {
+  type: "doughnut",   
+  data: {
+    labels: [
+      {% for item in wallet_composition_account %}
+         '{{ item.account_id }}'{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ],
+    datasets: [{
+      data: [
+        {% for item in wallet_composition_account %}
+           {{ item.amount }}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ],
+      backgroundColor: backgroundColors2,  
+      borderColor: baseColors2,            
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: "60%",   
+    plugins: {
+      legend: {
+        display: false,
+        position: 'top'
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return context.label + ': €' + context.raw.toLocaleString();
+          }
+        }
+      }
+    }
+  }
+});
 </script>
 
 {% endblock %}

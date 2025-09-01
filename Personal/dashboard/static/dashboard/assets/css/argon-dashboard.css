@@ -183,7 +183,10 @@
   --bs-form-invalid-color: rgb(245.4, 107.16, 107.16);
   --bs-form-invalid-border-color: rgb(245.4, 107.16, 107.16);
 }
-
+.carousel-control-prev,
+.carousel-control-next {
+    filter: invert(1);
+}
 *,
 *::before,
 *::after {
