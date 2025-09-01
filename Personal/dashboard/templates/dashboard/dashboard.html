@@ -451,13 +451,13 @@ var ctx0 = document.getElementById("chart-line").getContext("2d");
 new Chart(ctx0, {
   type: "line", 
   data: {
-    labels: [
-      {% for item in wallet_data %}
-         '{{ item.date|date:"M Y" }}'{% if not forloop.last %},{% endif %}
-      {% endfor %}
-    ],
+labels: [
+  {% for item in wallet_data %}
+     '{{ item.date|date:"m/y" }}'{% if not forloop.last %},{% endif %} 
+  {% endfor %}
+],
     datasets: [{
-      label: "Wealth Evolution",
+      label: "Wealth Evolution ",
       data: [
         {% for item in wallet_data %}
            {{ item.total_amount }}{% if not forloop.last %},{% endif %}
@@ -485,7 +485,12 @@ new Chart(ctx0, {
         display: true,
         title: {
           display: true,
-          text: 'Month'
+          text: 'Month-Year'
+        },
+        ticks: {
+          maxRotation: 45,    // Rotate labels
+          minRotation: 45,
+          maxTicksLimit: 12   // Limit number of ticks
         }
       }
     },
@@ -504,7 +509,8 @@ new Chart(ctx0, {
     }
   }
 });
-</script><script>
+</script>
+<script>
 var ctx1 = document.getElementById("assetclass_graph").getContext("2d");
 
 const baseColors1 = [
