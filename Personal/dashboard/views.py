@@ -24,6 +24,21 @@ def account_form(request):
     
     return render(request, 'dashboard/account_form.html', {'form': form})
 
+@login_required
+def transaction_form(request):
+    if request.method == 'POST':
+        form = TransactionForm(request.POST)
+        if form.is_valid():
+            account = form.save(commit=False)  
+            account.author = request.user
+            account.save()  
+            return redirect('/dashboard/')
+    else:
+        form = TransactionForm()
+    
+    return render(request, 'dashboard/account_form.html', {'form': form})
+
+
 
 @login_required
 def dashboard(request):
@@ -112,4 +127,3 @@ def dashboard(request):
     }
 
     return render (request,'dashboard/dashboard.html',context)
-
