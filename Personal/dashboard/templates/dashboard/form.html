@@ -22,4 +22,24 @@
         </div>
       </div>
     </div>
+
+    <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const typeField = document.getElementById('id_type');
+    const secondaryAccountField = document.getElementById('id_account_id_secondary');
+    const secondaryAccountContainer = secondaryAccountField.closest('.form-group') || secondaryAccountField.parentElement;
+
+    function toggleSecondaryAccount() {
+        if (typeField.value === 'Transfer') {
+            secondaryAccountContainer.style.display = 'block';
+        } else {
+            secondaryAccountContainer.style.display = 'none';
+            secondaryAccountField.value = '';
+        }
+    }
+
+    toggleSecondaryAccount();
+    typeField.addEventListener('change', toggleSecondaryAccount);
+});
+</script>
 {% endblock content %}

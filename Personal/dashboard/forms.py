@@ -20,21 +20,25 @@ class AccountForm(forms.ModelForm):
 class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
-        fields = ['date', 'amount','category_id','label_id','account_id','description']
+        fields = ['date', 'type','amount','category_id','label_id','account_id','account_id_secondary','description']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'type': forms.Select(attrs={'class': 'form-control'}),
             'amount': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
             'category_id': forms.Select(attrs={'class': 'form-control'}),
             'label_id': forms.Select(attrs={'class': 'form-control'}),
             'account_id': forms.Select(attrs={'class': 'form-control'}),
+            'account_id_secondary': forms.Select(attrs={'class': 'form-control'}),
             'description': forms.TextInput(attrs={'class': 'form-control'}),
         }
         labels = {
             'date': 'Date',
+            'type': 'Type',
             'amount': 'Amount',
             'category_id':'Category',
             'label_id':'Label',
-            'account_id':'Account',
+            'account_id':'Payment Account',
+            'account_id_secondary':'Receiving Account',
             'description':'Description'
         }
 

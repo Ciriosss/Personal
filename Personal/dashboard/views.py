@@ -1,15 +1,13 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models.functions import TruncMonth
-from django.db.models import Sum,F,Count
+from django.db.models import Sum,F,Count,Case,When
 from Personal.utils import *
 from finance.models import *
 from .forms import *
 from Personal.utils import *
 import datetime
 import calendar
-
-
 
 @login_required
 def account_form(request):
@@ -49,7 +47,14 @@ def dashboard(request):
     ##################################
 
     #CARD 1 : Net Activity (Transactions) this month
-    net_activity = Transaction.objects.filter(author=request.user, date__year=current_year, date__month=current_month).aggregate(net_activity = Sum('amount'))['net_activity'] or 0
+    net_activity = Transaction.objects.filter(
+                    author=request.user,
+                    date__year=current_year, 
+                    date__month=current_month
+                ).exclude(type='Transfer').aggregate(
+                    net_activity = Sum(Case(When(type='Expense', then=F('amount') * -1),
+                                default=F('amount')
+                    )))['net_activity'] or 0
     budget = 500
     money_to_budget = net_activity + budget
 

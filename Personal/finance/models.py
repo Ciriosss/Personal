@@ -20,12 +20,12 @@ class Instrument(models.Model):
     def __str__(self):
         return self.instrument_code
     
-
 class Account(models.Model):
     id = models.AutoField(primary_key=True)
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     account_name = models.CharField(max_length=255)
     account_class = models.ForeignKey(AssetClass, on_delete=models.CASCADE)
+    status = models.BooleanField(default=True)  
 
     def __str__(self):
         return self.account_name
@@ -46,6 +46,7 @@ class TransactionCategory(models.Model):
     id = models.AutoField(primary_key=True)
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     category = models.CharField(max_length=255)
+    budget = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     def __str__(self):
         return self.category
     
@@ -56,15 +57,23 @@ class Label(models.Model):
     def __str__(self):
 
         return self.label
+    
+transaction_types = [
+    ('Income', 'Income'),
+    ('Expense', 'Expense'),
+    ('Transfer', 'Transfer')
+]
        
 class Transaction(models.Model):
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     date = models.DateTimeField()
     entry_date = models.DateTimeField(default=timezone.now)
+    type = models.TextField(choices=transaction_types, default='Income')
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     category_id = models.ForeignKey(TransactionCategory, on_delete=models.CASCADE)
-    label_id = models.ForeignKey(Label, on_delete=models.SET_NULL, blank=True, null=True)  # safer
-    account_id = models.ForeignKey(Account, on_delete=models.CASCADE)
+    label_id = models.ForeignKey(Label, on_delete=models.SET_NULL, blank=True, null=True) 
+    account_id = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='transactions')
+    account_id_secondary = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='secondary_transactions', blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):
