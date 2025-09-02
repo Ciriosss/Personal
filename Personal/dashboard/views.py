@@ -1,11 +1,29 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models.functions import TruncMonth
 from django.db.models import Sum,F,Count
 from Personal.utils import *
 from finance.models import *
+from .forms import *
 import datetime
 import calendar
+
+
+
+@login_required
+def account_form(request):
+    if request.method == 'POST':
+        form = AccountForm(request.POST)
+        if form.is_valid():
+            account = form.save(commit=False)  
+            account.author = request.user
+            account.save()  
+            return redirect('/dashboard/')
+    else:
+        form = AccountForm()
+    
+    return render(request, 'dashboard/account_form.html', {'form': form})
+
 
 @login_required
 def dashboard(request):
@@ -94,3 +112,4 @@ def dashboard(request):
     }
 
     return render (request,'dashboard/dashboard.html',context)
+
