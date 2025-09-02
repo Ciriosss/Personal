@@ -5,6 +5,7 @@ from django.db.models import Sum,F,Count
 from Personal.utils import *
 from finance.models import *
 from .forms import *
+from Personal.utils import *
 import datetime
 import calendar
 
@@ -12,32 +13,19 @@ import calendar
 
 @login_required
 def account_form(request):
-    if request.method == 'POST':
-        form = AccountForm(request.POST)
-        if form.is_valid():
-            account = form.save(commit=False)  
-            account.author = request.user
-            account.save()  
-            return redirect('/dashboard/')
-    else:
-        form = AccountForm()
-    
-    return render(request, 'dashboard/account_form.html', {'form': form})
+    return generic_form_view(request, AccountForm, 'Account')
 
 @login_required
 def transaction_form(request):
-    if request.method == 'POST':
-        form = TransactionForm(request.POST)
-        if form.is_valid():
-            account = form.save(commit=False)  
-            account.author = request.user
-            account.save()  
-            return redirect('/dashboard/')
-    else:
-        form = TransactionForm()
-    
-    return render(request, 'dashboard/account_form.html', {'form': form})
+    return generic_form_view(request, TransactionForm, 'Transaction')
 
+@login_required
+def label_form(request):
+    return generic_form_view(request, LabelForm, 'Label')
+
+@login_required
+def investment_form(request):
+    return generic_form_view(request, InvestmentForm, 'Investment')
 
 
 @login_required

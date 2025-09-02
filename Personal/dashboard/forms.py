@@ -37,3 +37,31 @@ class TransactionForm(forms.ModelForm):
             'account_id':'Account',
             'description':'Description'
         }
+
+class LabelForm(forms.ModelForm):
+    class Meta:
+        model = Label
+        fields = ['label']
+        widgets = {
+            'label': forms.TextInput(attrs={'class': 'form-control'})
+        }
+        labels = {
+            'label': 'Label'
+        }
+
+class InvestmentForm(forms.ModelForm):
+    class Meta:
+        model = Investment
+        fields = ['date', 'instrument_code', 'quantity', 'price']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'instrument_code': forms.Select(attrs={'class': 'form-control'}),
+            'quantity': forms.NumberInput(attrs={'step': '0.0000000001', 'class': 'form-control'}),
+            'price': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
+        }
+        labels = {
+            'date': 'Date',
+            'instrument_code': 'Instrument',
+            'quantity': 'Quantity',
+            'price': 'Price'
+        }

@@ -6,4 +6,6 @@ urlpatterns = [
     path('', views.dashboard, name = 'dashboard'),
     path('accountform', views.account_form, name = 'account_form'),
     path('transactionform', views.transaction_form, name = 'transaction_form'),
+    path('labelform', views.label_form, name = 'label_form'),
+    path('investmentform', views.investment_form, name = 'investment_form'),
 ]
