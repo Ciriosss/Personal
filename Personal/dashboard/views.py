@@ -60,9 +60,14 @@ def dashboard(request):
     #WALLET COMPOSITION BY ASSET CLASS
     wallet_composition_account = Wallet.objects.filter(author=request.user,date__year=current_year, date__month=current_month)
 
-    # TOP 4 CATEGORY
-
+    # CATEGORY RECAP
     categories_recap = Transaction.objects.filter(author=request.user,date__year=current_year, date__month=current_month).values('category_id__category').annotate(total_amount=Sum('amount')).annotate(count=Count('amount')).order_by('-total_amount')[:4]
+
+    #INPUT DATA
+    account_count = Account.objects.filter(author=request.user).count()
+    transaction_count = Transaction.objects.filter(author=request.user,date__year=current_year, date__month=current_month).count()
+    label_count = Label.objects.filter(author=request.user).count()
+    investment_count = Investment.objects.filter(author=request.user).count()
     
     
 
@@ -80,7 +85,12 @@ def dashboard(request):
         'wallet_data':wallet_data,
         'wallet_composition_assetclass':wallet_composition_assetclass,
         'wallet_composition_account':wallet_composition_account,
-        'categories_recap':categories_recap
+        'categories_recap':categories_recap,
+        'account_count':account_count,
+        'transaction_count':transaction_count,
+        'label_count':label_count,
+        'investment_count':investment_count,
+
     }
 
     return render (request,'dashboard/dashboard.html',context)
