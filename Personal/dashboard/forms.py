@@ -1,5 +1,6 @@
 from django import forms
 from finance.models import *
+from django.forms import formset_factory
 
 class AccountForm(forms.ModelForm):
     class Meta:
@@ -69,3 +70,33 @@ class InvestmentForm(forms.ModelForm):
             'quantity': 'Quantity',
             'price': 'Price'
         }
+
+
+
+class WalletForm(forms.Form):
+    date = forms.DateTimeField(
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
+        initial=timezone.now,
+        label="Date"
+    )
+    note = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+        required=False,
+        label="Note"
+    )
+    
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+        
+        accounts = Account.objects.filter(author=user)
+        for account in accounts:
+            field_name = f'account_{account.id}'
+            self.fields[field_name] = forms.DecimalField(
+                max_digits=10,
+                decimal_places=2,
+                required=False,
+                initial=0,
+                label=f"{account.account_name} Amount",
+                widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'})
+            )

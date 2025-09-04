@@ -8,4 +8,5 @@ urlpatterns = [
     path('transactionform', views.transaction_form, name = 'transaction_form'),
     path('labelform', views.label_form, name = 'label_form'),
     path('investmentform', views.investment_form, name = 'investment_form'),
+    path('wallet', views.wallet_form, name = 'wallet_form'),
 ]
