@@ -27,40 +27,7 @@ def investment_form(request):
 
 @login_required
 def wallet_form(request):
-    if request.method == 'POST':
-        form = WalletForm(request.user, request.POST)
-        if form.is_valid():
-            date = form.cleaned_data['date']
-            note = form.cleaned_data['note']
-            
-            accounts = Account.objects.filter(author=request.user)
-            
-            for account in accounts:
-                amount_field = f'account_{account.id}'
-                amount = form.cleaned_data.get(amount_field, 0)
-                
-                if amount:
-                    Wallet.objects.create(
-                        author=request.user,
-                        date=date,
-                        entry_date=timezone.now(),
-                        account_id=account,
-                        amount=amount,
-                        note=note
-                    )
-            
-            return redirect('/dashboard/')
-    else:
-        form = WalletForm(request.user)
-    
-    context = {
-        'form': form,
-        'form_item': 'Wallet composition'
-    }
-    
-    return render(request, 'dashboard/form.html', context)
-
-
+    return generic_form_view(request, WalletForm, 'Wallet')
 
 @login_required
 def dashboard(request):

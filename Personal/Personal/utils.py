@@ -35,14 +35,42 @@ def percentage_population_function(current_wealth):
 
 def generic_form_view(request, form_class, form_item):
     if request.method == 'POST':
-        form = form_class(request.POST)
-        if form.is_valid():
-            instance = form.save(commit=False)  
-            instance.author = request.user
-            instance.save()  
-            return redirect('/dashboard/')
+        if form_item != 'Wallet':
+            form = form_class(request.POST)
+            if form.is_valid():
+                instance = form.save(commit=False)  
+                instance.author = request.user
+                instance.save()  
+                return redirect('/dashboard/')
+        else:
+            form = WalletForm(request.user, request.POST)
+            if form.is_valid():
+                date = form.cleaned_data['date']
+                note = form.cleaned_data['note']
+                
+                accounts = Account.objects.filter(author=request.user)
+                
+                for account in accounts:
+                    amount_field = f'account_{account.id}'
+                    amount = form.cleaned_data.get(amount_field, 0)
+                
+                    if amount:
+                        Wallet.objects.create(
+                            author=request.user,
+                            date=date,
+                            entry_date=timezone.now(),
+                            account_id=account,
+                            amount=amount,
+                            note=note
+                        )
+                
+                return redirect('/dashboard/')
+
     else:
-        form = form_class()
+        if form_item == 'Wallet':
+            form = form_class(request.user)  # Pass user for WalletForm
+        else:
+            form = form_class()
         
     context = {
         'form': form,
@@ -50,5 +78,4 @@ def generic_form_view(request, form_class, form_item):
     }
     
     return render(request, 'dashboard/form.html', context)
-            
-        
+
