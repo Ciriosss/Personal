@@ -3,7 +3,6 @@ from django.db import models
 from django.utils import timezone
 from user.models import Profile
 
-
 class AssetClass(models.Model):
     id = models.AutoField(primary_key=True)
     asset_class_name = models.CharField(max_length=255)
@@ -89,4 +88,4 @@ class Wallet(models.Model):
     note = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.author.id}-{self.date.strftime('%Y-%m')}-{self.account_id}"
+        return f"{self.author.id}-{self.date.date()}-{self.account_id}"
