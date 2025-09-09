@@ -1,9 +1,8 @@
-
-  {% extends "dashboard\base.html" %}
+{% extends "dashboard\base.html" %}
     {% load static %}
     {% block style %}
-  
-  <div class="min-height-300 bg-dark position-absolute w-100"></div>
+
+  <div class="min-vh-100 bg-dark position-fixed w-100"></div>
   <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
     <div class="sidenav-header">
       <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
@@ -23,7 +22,7 @@
             <span class="nav-link-text ms-1">Dashboard</span>
           </a>
         </li>
-<li class="nav-item">
+        <li class="nav-item">
           <a class="nav-link " href="{% url 'dashboard' %}">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
               <i class="ni ni-chart-bar-32 text-dark text-sm opacity-10"></i>
@@ -75,7 +74,11 @@
       <a class="btn btn-primary btn-sm mb-0 w-100" href="https://www.creative-tim.com/product/argon-dashboard-pro?ref=sidebarfree" type="button">Upgrade to pro</a>
     </div>
   </aside>
+  <main class="main-content position-relative border-radius-lg ">
+<!-- Simple slider -->
+
  {% block content %}{% endblock %}
+   </main>
   <div class="fixed-plugin">
     <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
       <i class="fa fa-cog py-2"> </i>
