@@ -35,6 +35,8 @@ def dashboard(request):
     current_year = datetime.datetime.now().year
     current_month = datetime.datetime.now().month
 
+    user = request.user
+
     if current_month == 1:
         prior_month = 12
         prior_year = current_year - 1
@@ -101,6 +103,7 @@ def dashboard(request):
     
 
     context = {
+        'user' : user,
         'current_month_name':current_month_name,
         'current_year':current_year,
         'net_activity': net_activity, 
