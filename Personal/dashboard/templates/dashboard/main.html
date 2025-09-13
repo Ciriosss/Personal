@@ -84,6 +84,15 @@
   </aside>
   <main class="main-content position-relative border-radius-lg ">
 <!-- Simple slider -->
+<div class="container">
+  <br>
+        <div class="buttons-container">
+            <a href ="{% url 'dashboard' %}" style="background-color: #5e72e4;" class="btn btn-dark btn-doc">Finance</a>
+            <a href ="{% url 'fitness_dashboard' %}"  style="background-color: #5e72e4;" class="btn btn-dark btn-doc">Fitness</a>
+            <a href="https://www.creative-tim.com/learning-lab/bootstrap/license/argon-dashboard"  style="background-color: #5e72e4;" class="btn btn-dark btn-doc">To do</a>
+            <a href="https://www.creative-tim.com/learning-lab/bootstrap/license/argon-dashboard" style="background-color: #5e72e4;" class="btn btn-dark btn-doc">Projects</a>
+        </div>
+    </div>
 
  {% block content %}{% endblock %}
    </main>

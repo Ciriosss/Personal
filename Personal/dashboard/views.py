@@ -122,7 +122,11 @@ def dashboard(request):
         'transaction_count':transaction_count,
         'label_count':label_count,
         'investment_count':investment_count,
-
     }
 
     return render (request,'dashboard/dashboard.html',context)
+
+
+@login_required
+def fitness_dashboard(request):
+    return render (request,'dashboard/fitness-dashboard.html',{})
