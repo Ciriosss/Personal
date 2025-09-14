@@ -27948,11 +27948,9 @@ span.flatpickr-weekday {
 .noUi-marker-vertical.noUi-marker-sub {
   width: 10px;
 }
-
 .noUi-marker-vertical.noUi-marker-large {
   width: 15px;
 }
-
 .noUi-tooltip {
   display: block;
   position: absolute;
@@ -28164,7 +28162,6 @@ pre[class*=language-] {
   /* please don't change 'position' */
   position: absolute;
 }
-
 .ps__rail-y {
   display: none;
   opacity: 0;
@@ -28182,7 +28179,6 @@ pre[class*=language-] {
   display: block;
   background-color: transparent;
 }
-
 .ps:hover>.ps__rail-x,
 .ps:hover>.ps__rail-y,
 .ps--focus>.ps__rail-x,
@@ -28191,7 +28187,6 @@ pre[class*=language-] {
 .ps--scrolling-y>.ps__rail-y {
   opacity: 0.6;
 }
-
 .ps .ps__rail-x:hover,
 .ps .ps__rail-y:hover,
 .ps .ps__rail-x:focus,
@@ -28201,7 +28196,6 @@ pre[class*=language-] {
   background-color: #eee;
   opacity: 0.9;
 }
-
 /*
  * Scrollbar thumb styles
  */
@@ -28256,10 +28250,7 @@ pre[class*=language-] {
     overflow: auto !important;
   }
 }
-
 /*# sourceMappingURL=dashboard-free.css.map */
-
-
  .nav-wrapper {
             background: white;
             border-radius: 12px;
@@ -28347,7 +28338,6 @@ pre[class*=language-] {
             color: var(--dark-color);
             font-size: 14px;
         }
-
         /* Responsive adjustments */
         @media (max-width: 576px) {
             .nav-pills .nav-link {
