@@ -22,14 +22,48 @@
             <span class="nav-link-text ms-1">Dashboard</span>
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link " href="{% url 'dashboard' %}">
-            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="ni ni-chart-bar-32 text-dark text-sm opacity-10"></i>
-            </div>
-            <span class="nav-link-text ms-1">Finance</span>
-          </a>
-        </li>
+      <li class="nav-item">
+  <a class="nav-link expandable" href="javascript:void(0);" onclick="toggleSubmenu(this)">
+    <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+      <i class="ni ni-chart-bar-32 text-dark text-sm opacity-10"></i>
+    </div>
+    <span class="nav-link-text ms-1">Finance</span>
+  </a>
+  <ul class="submenu">
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <div class="icon">
+          <i class="fas fa-exchange-alt"></i>
+        </div>
+        <span class="nav-link-text">Transactions</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <div class="icon">
+          <i class="fas fa-wallet"></i>
+        </div>
+        <span class="nav-link-text">Accounts</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <div class="icon">
+          <i class="fas fa-credit-card"></i>
+        </div>
+        <span class="nav-link-text">Wallet</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <div class="icon">
+          <i class="fas fa-file-invoice-dollar"></i>
+        </div>
+        <span class="nav-link-text">Invoices</span>
+      </a>
+    </li>
+  </ul>
+</li>
         <li class="nav-item">
           <a class="nav-link" href="">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -87,8 +121,22 @@
 <div class="container">
   <br>
         <div class="buttons-container">
-            <a href ="{% url 'dashboard' %}" style="background-color: #5e72e4;" class="btn btn-dark btn-doc">Finance</a>
-            <a href ="{% url 'fitness_dashboard' %}"  style="background-color: #5e72e4;" class="btn btn-dark btn-doc">Fitness</a>
+            <a href ="{% url 'dashboard' %}" 
+              {% if request.resolver_match.url_name == 'dashboard' %}
+                style="background-color: #FFFFFF; color: #050910ff" 
+              {% else %}
+                style="background-color: #5e72e4;" class="btn btn-dark btn-doc"
+              {% endif %} 
+                class="btn btn-dark btn-doc">Finance
+            </a>
+            <a href ="{% url 'fitness_dashboard' %}" 
+              {% if request.resolver_match.url_name == 'fitness_dashboard' %}
+                style="background-color: #FFFFFF; color: #050910ff" 
+              {% else %}
+                style="background-color: #5e72e4;" class="btn btn-dark btn-doc"
+              {% endif %} 
+                class="btn btn-dark btn-doc">Finance
+            </a>
             <a href="https://www.creative-tim.com/learning-lab/bootstrap/license/argon-dashboard"  style="background-color: #5e72e4;" class="btn btn-dark btn-doc">To do</a>
             <a href="https://www.creative-tim.com/learning-lab/bootstrap/license/argon-dashboard" style="background-color: #5e72e4;" class="btn btn-dark btn-doc">Projects</a>
         </div>
@@ -169,6 +217,13 @@
     </div>
   </div>
   <!--   Core JS Files   -->
+     <script>
+      function toggleSubmenu(element) {
+    const parentItem = element.closest('.nav-item');
+    parentItem.classList.toggle('open');
+    element.classList.toggle('open');
+}
+     </script>
 
   <script>
     var win = navigator.platform.indexOf('Win') > -1;
