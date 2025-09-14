@@ -2,6 +2,7 @@
 {% load static %}
 {% load mathfilters %}
 {% block content %}
+
     <!-- Navbar -->
     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur" data-scroll="false">
       <div class="container-fluid py-1 px-3">
@@ -80,7 +81,7 @@
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">Investment Profit</p>
                     <h5 class="font-weight-bolder">
-                      {{investment_profit}}
+                     € {{investment_profit}}
                     </h5>
                     <p class="mb-0">
                       {%if investment_profit_prc > 0%}
@@ -88,7 +89,7 @@
                       {% else %}
                          <span class="text-danger text-sm font-weight-bolder">{{investment_profit_prc}}</span>
                       {% endif %}
-                      capital c
+                      capital gain
                     </p>
                   </div>
                 </div>
@@ -288,7 +289,7 @@
               </div>
               <div class="d-flex flex-column">
                 <h6 class="mb-1 text-dark text-sm">Wallet Composition</h6>
-                <span class="text-xs"><span class="font-weight-bold">{{investment_count}}</span> Wallet composition registred</span>
+                <span class="text-xs"><span class="font-weight-bold">{{wallet_count}}</span> Wallet composition registred</span>
               </div>
             </div>
             <div class="d-flex">

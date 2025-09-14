@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models.functions import TruncMonth
 from django.db.models import Sum,F,Count,Case,When
+from django.db.models.functions import Abs
 from Personal.utils import *
 from finance.models import *
 from .forms import *
@@ -72,7 +73,7 @@ def dashboard(request):
     investment_cost = Investment.objects.filter(author=request.user).aggregate(investment_cost=Sum(F('price') * F('quantity')))['investment_cost'] or 0
     investment_value = investment_value_function(request) or 0
 
-    investment_profit = investment_value-investment_cost
+    investment_profit = round(investment_value-investment_cost,0)
     investment_profit_prc = round(investment_profit / investment_cost * 100,2) if investment_cost !=0 else 0
 
     #CARD 4 : TOP % OF POPULATION
@@ -86,21 +87,24 @@ def dashboard(request):
     wallet_data = Wallet.objects.filter(author=request.user).annotate(month=TruncMonth('date')).values('month').annotate(total_amount=Sum('amount')).order_by('month')
 
     #WALLET COMPOSITION BY ASSET CLASS
-    wallet_composition_assetclass = Wallet.objects.filter(author=request.user,date__year=current_year, date__month=current_month).values(asset_class = F('account_id__account_class__asset_class_name')).annotate(total_amount=Sum('amount')).order_by('account_id__account_class__asset_class_name')
+    wallet_composition_assetclass = Wallet.objects.filter(author=request.user,date__year=prior_year, date__month=prior_month).values(asset_class = F('account_id__account_class__asset_class_name')).annotate(total_amount=Sum('amount')).order_by('account_id__account_class__asset_class_name')
 
     #WALLET COMPOSITION BY ASSET CLASS
-    wallet_composition_account = Wallet.objects.filter(author=request.user,date__year=current_year, date__month=current_month)
+    wallet_composition_account = Wallet.objects.filter(author=request.user,date__year=prior_year, date__month=prior_month)
 
     # CATEGORY RECAP
-    categories_recap = Transaction.objects.filter(author=request.user,date__year=current_year, date__month=current_month).values('category_id__category').annotate(total_amount=Sum('amount')).annotate(count=Count('amount')).order_by('-total_amount')[:4]
+    categories_recap = Transaction.objects.filter(author=request.user,date__year=current_year, date__month=current_month).values('category_id__category').annotate(total_amount=Sum(Case(When(type='Expense', then=F('amount') * -1),
+                                default=F('amount')
+                    ))).annotate(count=Count('amount')).order_by(Abs('total_amount').desc())[:5]
+    
 
     #INPUT DATA
     account_count = Account.objects.filter(author=request.user).count()
     transaction_count = Transaction.objects.filter(author=request.user,date__year=current_year, date__month=current_month).count()
     label_count = Label.objects.filter(author=request.user).count()
+    wallet_count = Wallet.objects.filter(author=request.user).count()
     investment_count = Investment.objects.filter(author=request.user).count()
-    
-    
+
 
     context = {
         'user' : user,
@@ -121,6 +125,7 @@ def dashboard(request):
         'account_count':account_count,
         'transaction_count':transaction_count,
         'label_count':label_count,
+        'wallet_count':wallet_count,
         'investment_count':investment_count,
     }
 
