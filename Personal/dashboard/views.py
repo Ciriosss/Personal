@@ -5,6 +5,7 @@ from django.db.models import Sum,F,Count,Case,When
 from django.db.models.functions import Abs
 from Personal.utils import *
 from finance.models import *
+from fitness.models import *
 from .forms import *
 from Personal.utils import *
 import datetime
@@ -134,4 +135,11 @@ def dashboard(request):
 
 @login_required
 def fitness_dashboard(request):
-    return render (request,'dashboard/fitness-dashboard.html',{})
+
+    current_body_measurement = Body.objects.filter(author = request.user).order_by('-date')[0]
+
+    contex = {
+        'current_body_measurement':current_body_measurement
+
+    }
+    return render (request,'dashboard/fitness-dashboard.html',contex)

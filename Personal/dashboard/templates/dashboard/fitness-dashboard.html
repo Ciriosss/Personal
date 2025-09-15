@@ -20,7 +20,7 @@
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">Weight</p>
                     <h5 class="font-weight-bolder">
-                      € {{net_activity}}
+                      Kg {{current_body_measurement.weight}}
                     </h5>
                     <p class="mb-0">
                       {%if money_to_budget > 0%}
@@ -50,7 +50,7 @@
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">BMI</p>
                     <h5 class="font-weight-bolder">
-                      € {{current_wealth}}
+                      % {{current_body_measurement.BMI}}
                     </h5>
                     <p class="mb-0">
                       {%if change_prc > 0%}
@@ -80,7 +80,7 @@
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">Body Water</p>
                     <h5 class="font-weight-bolder">
-                      {{investment_profit}}
+                      % {{current_body_measurement.body_water}}
                     </h5>
                     <p class="mb-0">
                       {%if investment_profit_prc > 0%}
@@ -109,7 +109,7 @@
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">Average sleep</p>
                     <h5 class="font-weight-bolder">
-                      {{population_perc}}
+                      h 6.67
                     </h5>
                     <p class="mb-0">
                       <span class="text-success text-sm font-weight-bolder">100.000</span> for the top 1%
@@ -129,7 +129,7 @@
   <div class="col-lg-7 mb-lg-0 mb-4">
     <div class="card z-index-2 h-100">
       <div class="card-header pb-0 pt-3 bg-transparent">
-        <h6 class="text-capitalize">Wealth evolution</h6>
+        <h6 class="text-capitalize">Weight evolution</h6>
         <p class="text-sm mb-0">
           <i class="fa fa-arrow-up text-success"></i>
         </p>
@@ -148,7 +148,7 @@
           <div class="card card-carousel overflow-hidden h-100 p-0">
             <div class="card z-index-2 h-100">
               <div class="card-header pb-0 pt-3 bg-transparent">
-                <h6 class="text-capitalize">Wallet Composition By Asset Class</h6>
+                <h6 class="text-capitalize">Body Composition</h6>
               </div>
               <div class="card-body p-4 d-flex justify-content-center align-items-center" style="height: 400px;">
                 <div class="chart" style="width: 320px; height: 320px;">
@@ -158,25 +158,6 @@
             </div>
           </div>
         </div>
-        
-        <div class="carousel-item">
-          <div class="card card-carousel overflow-hidden h-100 p-0">
-            <div class="card z-index-2 h-100">
-              <div class="card-header pb-0 pt-3 bg-transparent">
-                <h6 class="text-capitalize">Wallet Composition By Account</h6>
-              </div>
-              <div class="card-body p-4 d-flex justify-content-center align-items-center" style="height: 400px;">
-                <div class="chart" style="width: 320px; height: 320px;">
-                  <canvas id="account_graph" class="chart-canvas w-100 h-100"></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="carousel-indicators">
-        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" style="filter: invert(1) sepia(1) hue-rotate(220deg) saturate(2);"></button>
-        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1"style="filter: invert(1) sepia(1) hue-rotate(220deg) saturate(2);"></button>
       </div>
     </div>
   </div>
@@ -187,7 +168,7 @@
     <div class="card ">
       <div class="card-header pb-0 p-3">
         <div class="d-flex justify-content-between">
-          <h6 class="mb-2">Transaction Recap</h6>
+          <h6 class="mb-2">Actual maximal results</h6>
         </div>
       </div>
       <div class="table-responsive">
@@ -245,7 +226,7 @@
                 <i class="ni ni-mobile-button text-white opacity-10"></i>
               </div>
               <div class="d-flex flex-column">
-                <h6 class="mb-1 text-dark text-sm">Accounts</h6>
+                <h6 class="mb-1 text-dark text-sm">Activity</h6>
                 <span class="text-xs"> <span class="font-weight-bold">{{account_count}}</span> Active</span>
               </div>
             </div>
@@ -259,7 +240,7 @@
                 <i class="ni ni-tag text-white opacity-10"></i>
               </div>
               <div class="d-flex flex-column">
-                <h6 class="mb-1 text-dark text-sm">Transactions</h6>
+                <h6 class="mb-1 text-dark text-sm">Body Registration</h6>
                 <span class="text-xs"><span class="font-weight-bold">{{transaction_count}}</span> Transactions this month</span>
               </div>
             </div>
@@ -273,40 +254,12 @@
                 <i class="ni ni-box-2 text-white opacity-10"></i>
               </div>
               <div class="d-flex flex-column">
-                <h6 class="mb-1 text-dark text-sm">Labels</h6>
+                <h6 class="mb-1 text-dark text-sm">Diet</h6>
                 <span class="text-xs"><span class="font-weight-bold">{{label_count}}</span> Label registred</span>
               </div>
             </div>
             <div class="d-flex">
               <a href ="{% url 'label_form' %}"><button class="btn btn-link btn-icon-only btn-rounded btn-sm text-dark icon-move-right my-auto"><i class="ni ni-bold-right" aria-hidden="true"></i></button></a>
-            </div>
-          </li>
-          <li class="list-group-item border-0 d-flex justify-content-between ps-0 border-radius-lg">
-            <div class="d-flex align-items-center">
-              <div class="icon icon-shape icon-sm me-3 bg-gradient-dark shadow text-center">
-                <i class="ni ni-satisfied text-white opacity-10"></i>
-              </div>
-              <div class="d-flex flex-column">
-                <h6 class="mb-1 text-dark text-sm">Wallet Composition</h6>
-                <span class="text-xs"><span class="font-weight-bold">{{investment_count}}</span> Wallet composition registred</span>
-              </div>
-            </div>
-            <div class="d-flex">
-              <a href ="{% url 'wallet_form' %}"><button class="btn btn-link btn-icon-only btn-rounded btn-sm text-dark icon-move-right my-auto"><i class="ni ni-bold-right" aria-hidden="true"></i></button></a>
-            </div>
-          </li>
-          <li class="list-group-item border-0 d-flex justify-content-between ps-0 border-radius-lg">
-            <div class="d-flex align-items-center">
-              <div class="icon icon-shape icon-sm me-3 bg-gradient-dark shadow text-center">
-                <i class="ni ni-satisfied text-white opacity-10"></i>
-              </div>
-              <div class="d-flex flex-column">
-                <h6 class="mb-1 text-dark text-sm">Investments</h6>
-                <span class="text-xs"><span class="font-weight-bold">{{investment_count}}</span> investments done</span>
-              </div>
-            </div>
-            <div class="d-flex">
-              <a href ="{% url 'investment_form' %}"><button class="btn btn-link btn-icon-only btn-rounded btn-sm text-dark icon-move-right my-auto"><i class="ni ni-bold-right" aria-hidden="true"></i></button></a>
             </div>
           </li>
         </ul>
