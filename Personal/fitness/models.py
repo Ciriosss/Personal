@@ -9,17 +9,15 @@ class Intensity(models.Model):
     def __str__(self):
         return self.intensity
 
-class Type(models.Model):
-    id = models.AutoField(primary_key=True)
-    type = models.CharField(max_length=20)
-
-    def __str__(self):
-        return self.type
+exercise_types = [
+    ('Cardio', 'Cardio'),
+    ('Calisthenics', 'Calisthenics')
+]
 
 class Exercise(models.Model):
     id = models.AutoField(primary_key=True)
     exercise = models.CharField(max_length=30)
-    type = models.ForeignKey(Type,on_delete=models.CASCADE)
+    type = models.TextField(choices=exercise_types, default='Cardio')
 
     def __str__(self):
         return self.exercise
@@ -30,7 +28,7 @@ class PhisicalActivity (models.Model):
     date = models.DateTimeField()
     entry_date = models.DateTimeField(default=timezone.now)
     time = models.IntegerField()
-    type = models.ForeignKey(Type, on_delete=models.CASCADE)
+    type = models.TextField(choices=exercise_types, default='Cardio')
     intensity = models.ForeignKey(Intensity,on_delete=models.CASCADE)
 
     def __str__(self):
@@ -89,7 +87,7 @@ class Body(models.Model):
         return f"Body({self.id})"
     
 
-class Max(models.Model):
+class Maximals(models.Model):
     id = models.AutoField(primary_key=True)
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     date = models.DateTimeField()

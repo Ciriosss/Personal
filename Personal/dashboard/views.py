@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models.functions import TruncMonth
-from django.db.models import Sum,F,Count,Case,When
+from django.db.models import Sum,F,Count,Case,When,Max
 from django.db.models.functions import Abs
 from Personal.utils import *
 from finance.models import *
@@ -136,10 +136,17 @@ def dashboard(request):
 @login_required
 def fitness_dashboard(request):
 
-    current_body_measurement = Body.objects.filter(author = request.user).order_by('-date')[0]
+    weight_data = Body.objects.filter(author = request.user).order_by('-date')
+    current_body_measurement = weight_data[0]
+
+    max_date = Maximals.objects.filter(author=request.user).aggregate(max_date=Max('date'))['max_date']
+
+    maximals = Maximals.objects.filter(author=request.user,date=max_date)
 
     contex = {
-        'current_body_measurement':current_body_measurement
+        'current_body_measurement':current_body_measurement,
+        'weight_data':weight_data,
+        'maximals':maximals
 
     }
     return render (request,'dashboard/fitness-dashboard.html',contex)
