@@ -48,7 +48,6 @@ def dashboard(request):
 
     current_month_name = calendar.month_name[current_month]
 
-
     ##################################
     ## Finance Dashboard card data  ##
     ##################################
@@ -94,7 +93,7 @@ def dashboard(request):
     wallet_composition_account = Wallet.objects.filter(author=request.user,date__year=prior_year, date__month=prior_month)
 
     # CATEGORY RECAP
-    categories_recap = Transaction.objects.filter(author=request.user,date__year=current_year, date__month=current_month).values('category_id__category').annotate(total_amount=Sum(Case(When(type='Expense', then=F('amount') * -1),
+    categories_recap = Transaction.objects.filter(author=request.user,date__year=current_year, date__month=current_month).exclude(type='Transfer').values('category_id__category').annotate(total_amount=Sum(Case(When(type='Expense', then=F('amount') * -1),
                                 default=F('amount')
                     ))).annotate(count=Count('amount')).order_by(Abs('total_amount').desc())[:5]
     
@@ -138,6 +137,7 @@ def fitness_dashboard(request):
 
     weight_data = Body.objects.filter(author = request.user).order_by('-date')
     current_body_measurement = weight_data[0]
+    body_composition_rest = 1 - (current_body_measurement.muscle_mass + current_body_measurement.fat_mass)
 
     max_date = Maximals.objects.filter(author=request.user).aggregate(max_date=Max('date'))['max_date']
 
@@ -146,7 +146,8 @@ def fitness_dashboard(request):
     contex = {
         'current_body_measurement':current_body_measurement,
         'weight_data':weight_data,
-        'maximals':maximals
+        'maximals':maximals,
+        'body_composition_rest':body_composition_rest
 
     }
     return render (request,'dashboard/fitness-dashboard.html',contex)
