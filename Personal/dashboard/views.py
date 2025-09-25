@@ -132,6 +132,20 @@ def dashboard(request):
     return render (request,'dashboard/dashboard.html',context)
 
 
+
+@login_required
+def body_form(request):
+    return generic_form_view(request, BodyForm, 'Body')
+
+@login_required
+def diet_form(request):
+    return generic_form_view(request, DietForm, 'Diet')
+
+@login_required
+def phisicalactivity_form(request):
+    return generic_form_view(request, PhysicalActivityForm, 'Phisical Activity')
+
+
 @login_required
 def fitness_dashboard(request):
 

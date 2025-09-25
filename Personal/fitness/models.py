@@ -2,12 +2,24 @@ from django.db import models
 from django.utils import timezone
 from user.models import Profile
 
-class Intensity(models.Model):
-    id = models.AutoField(primary_key=True)
-    intensity = models.CharField(max_length=10)
-    description = models.CharField(max_length=30)
-    def __str__(self):
-        return self.intensity
+intensity_types = [
+    ('1', 'Absent'),
+    ('2', 'Minimal'),
+    ('3', 'Decent'),
+    ('4', 'Medium'),
+    ('5', 'Hight'),
+    ('6', 'Extreme'),
+]
+
+sleep_types = [
+    ('1', 'None'),
+    ('2', 'Minimal'),
+    ('3', 'Decent'),
+    ('4', 'Medium'),
+    ('5', 'Hight'),
+    ('6', 'Wanderluf'),
+]
+    
 
 exercise_types = [
     ('Cardio', 'Cardio'),
@@ -28,7 +40,7 @@ class PhisicalActivity(models.Model):
     entry_date = models.DateTimeField(default=timezone.now)
     time = models.IntegerField()
     type = models.TextField(choices=exercise_types, default='Cardio')
-    intensity = models.ForeignKey(Intensity,on_delete=models.CASCADE)
+    intensity = models.TextField(choices=intensity_types, default='1')
     def __str__(self):
         return f"Activity({self.id})"
     
@@ -51,6 +63,7 @@ class Cali(models.Model):
     series = models.IntegerField()
     rep = models.IntegerField()
     extra = models.IntegerField()
+    rest = models.IntegerField(null= True, blank =True)
     def __str__(self):
         return f"Cali({self.id})"
     
@@ -84,7 +97,6 @@ class Body(models.Model):
     def __str__(self):
         return f"Body({self.id})"
     
-
 class Maximals(models.Model):
     id = models.AutoField(primary_key=True)
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
@@ -96,3 +108,13 @@ class Maximals(models.Model):
 
     def __str__(self):
         return f"Cardio({self.id})"
+
+class Sleep(models.Model):
+    id = models.AutoField(primary_key=True)
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    date = models.DateTimeField()
+    time = models.DateTimeField(default=timezone.now)
+    quality = models.TextField(choices=sleep_types, default='1')
+
+    def __str__(self):
+        return f"({self.id})"

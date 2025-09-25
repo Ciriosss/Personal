@@ -10,4 +10,7 @@ urlpatterns = [
     path('labelform', views.label_form, name = 'label_form'),
     path('investmentform', views.investment_form, name = 'investment_form'),
     path('wallet', views.wallet_form, name = 'wallet_form'),
+    path('body', views.body_form, name = 'body_form'),
+    path('phisicalactivity', views.phisicalactivity_form, name = 'phisicalactivity_form'),
+    path('diet', views.diet_form, name = 'diet_form'),
 ]

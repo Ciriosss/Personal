@@ -1,6 +1,12 @@
 from django import forms
 from finance.models import *
-from django.forms import formset_factory
+from fitness.models import *
+
+
+####################################
+#######     FINANCE FORMS    #######
+####################################
+
 
 class AccountForm(forms.ModelForm):
     class Meta:
@@ -100,3 +106,148 @@ class WalletForm(forms.Form):
                 label=f"{account.account_name} Amount",
                 widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'})
             )
+
+####################################
+#######     FITNESS FORMS    #######
+####################################
+
+from django import forms
+from .models import Body
+
+class BodyForm(forms.ModelForm):
+    class Meta:
+        model = Body
+        fields = ['date', 'weight', 'waist', 'bicept', 'leg', 'BMI', 'muscle_mass', 'fat_mass', 'body_water', 'visceral_fat', 'metabolic_age']
+        widgets = {
+            'date': forms.DateTimeInput(attrs={
+                'type': 'datetime-local',
+                'class': 'form-control'
+            }),
+            'weight': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0',
+                'placeholder': 'Enter weight in kg'
+            }),
+            'waist': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0',
+                'placeholder': 'Enter waist measurement in cm'
+            }),
+            'bicept': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0',
+                'placeholder': 'Enter bicep measurement in cm'
+            }),
+            'leg': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0',
+                'placeholder': 'Enter leg measurement in cm'
+            }),
+            'BMI': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0',
+                'placeholder': 'Enter BMI'
+            }),
+            'muscle_mass': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0',
+                'placeholder': 'Enter muscle mass in kg'
+            }),
+            'fat_mass': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0',
+                'placeholder': 'Enter fat mass in kg'
+            }),
+            'body_water': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0',
+                'placeholder': 'Enter body water percentage'
+            }),
+            'visceral_fat': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0',
+                'placeholder': 'Enter visceral fat level'
+            }),
+            'metabolic_age': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '0',
+                'placeholder': 'Enter metabolic age in years'
+            }),
+        }
+        labels = {
+            'date': 'Measurement Date',
+            'weight': 'Weight (kg)',
+            'waist': 'Waist Circumference (cm)',
+            'bicept': 'Bicep Circumference (cm)',
+            'leg': 'Leg Circumference (cm)',
+            'BMI': 'Body Mass Index',
+            'muscle_mass': 'Muscle Mass (kg)',
+            'fat_mass': 'Fat Mass (kg)',
+            'body_water': 'Body Water (%)',
+            'visceral_fat': 'Visceral Fat Level',
+            'metabolic_age': 'Metabolic Age (years)',
+        }
+
+class PhysicalActivityForm(forms.ModelForm):
+    class Meta:
+        model = PhisicalActivity
+        fields = ['date', 'time', 'type', 'intensity']
+        widgets = {
+            'date': forms.DateTimeInput(attrs={
+                'type': 'datetime-local',
+                'class': 'form-control'
+            }),
+            'time': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '1',
+                'placeholder': 'Enter duration in minutes'
+            }),
+            'type': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            'intensity': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+        }
+        labels = {
+            'date': 'Activity Date',
+            'time': 'Duration (minutes)',
+            'type': 'Exercise Type',
+            'intensity': 'Intensity Level',
+        }
+
+
+class DietForm(forms.ModelForm):
+    class Meta:
+        model = Diet
+        fields = ['date', 'need_cal', 'eaten_cal']
+        widgets = {
+            'date': forms.DateTimeInput(attrs={
+                'type': 'datetime-local',
+                'class': 'form-control'
+            }),
+            'need_cal': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '0',
+                'placeholder': 'Enter required calories'
+            }),
+            'eaten_cal': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '0',
+                'placeholder': 'Enter consumed calories'
+            }),
+        }
+        labels = {
+            'date': 'Diet Date',
+            'need_cal': 'Required Calories',
+            'eaten_cal': 'Consumed Calories',
+        }

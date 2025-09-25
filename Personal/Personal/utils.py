@@ -2,6 +2,7 @@ from django.db.models import Sum, F, Subquery, OuterRef
 from django.shortcuts import render,redirect
 from dashboard.forms import *
 from finance.models import *
+from fitness.models import *
 from scipy.stats import norm
 
 
