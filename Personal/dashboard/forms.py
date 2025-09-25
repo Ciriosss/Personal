@@ -1,4 +1,5 @@
 from django import forms
+from django.utils import timezone
 from finance.models import *
 from fitness.models import *
 
@@ -25,11 +26,15 @@ class AccountForm(forms.ModelForm):
         }
 
 class TransactionForm(forms.ModelForm):
+    date = forms.DateField(
+        initial=timezone.now().date(),
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )
+    
     class Meta:
         model = Transaction
         fields = ['date', 'type','amount','category_id','label_id','account_id','account_id_secondary','description']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'type': forms.Select(attrs={'class': 'form-control'}),
             'amount': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
             'category_id': forms.Select(attrs={'class': 'form-control'}),
@@ -61,11 +66,15 @@ class LabelForm(forms.ModelForm):
         }
 
 class InvestmentForm(forms.ModelForm):
+    date = forms.DateField(
+        initial=timezone.now().date(),
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )
+    
     class Meta:
         model = Investment
         fields = ['date', 'instrument_code', 'quantity', 'price']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'instrument_code': forms.Select(attrs={'class': 'form-control'}),
             'quantity': forms.NumberInput(attrs={'step': '0.0000000001', 'class': 'form-control'}),
             'price': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
@@ -111,18 +120,16 @@ class WalletForm(forms.Form):
 #######     FITNESS FORMS    #######
 ####################################
 
-from django import forms
-from .models import Body
-
 class BodyForm(forms.ModelForm):
+    date = forms.DateTimeField(
+        initial=timezone.now,
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'})
+    )
+    
     class Meta:
         model = Body
         fields = ['date', 'weight', 'waist', 'bicept', 'leg', 'BMI', 'muscle_mass', 'fat_mass', 'body_water', 'visceral_fat', 'metabolic_age']
         widgets = {
-            'date': forms.DateTimeInput(attrs={
-                'type': 'datetime-local',
-                'class': 'form-control'
-            }),
             'weight': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'step': '0.01',
@@ -198,14 +205,15 @@ class BodyForm(forms.ModelForm):
         }
 
 class PhysicalActivityForm(forms.ModelForm):
+    date = forms.DateTimeField(
+        initial=timezone.now,
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'})
+    )
+    
     class Meta:
         model = PhisicalActivity
         fields = ['date', 'time', 'type', 'intensity']
         widgets = {
-            'date': forms.DateTimeInput(attrs={
-                'type': 'datetime-local',
-                'class': 'form-control'
-            }),
             'time': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'min': '1',
@@ -227,14 +235,15 @@ class PhysicalActivityForm(forms.ModelForm):
 
 
 class DietForm(forms.ModelForm):
+    date = forms.DateTimeField(
+        initial=timezone.now,
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'})
+    )
+    
     class Meta:
         model = Diet
         fields = ['date', 'need_cal', 'eaten_cal']
         widgets = {
-            'date': forms.DateTimeInput(attrs={
-                'type': 'datetime-local',
-                'class': 'form-control'
-            }),
             'need_cal': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'min': '0',
