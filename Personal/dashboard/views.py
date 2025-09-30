@@ -131,8 +131,6 @@ def dashboard(request):
 
     return render (request,'dashboard/dashboard.html',context)
 
-
-
 @login_required
 def body_form(request):
     return generic_form_view(request, BodyForm, 'Body')

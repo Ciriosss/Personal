@@ -317,6 +317,11 @@
 </div>
 </div>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 var ctx0 = document.getElementById("chart-line").getContext("2d");
 new Chart(ctx0, {
@@ -324,7 +329,7 @@ new Chart(ctx0, {
   data: {
 labels: [
   {% for item in wallet_data %}
-     '{{ item.date|date:"m/y" }}'{% if not forloop.last %},{% endif %} 
+     '{{ item.month|date:"m/y" }}'{% if not forloop.last %},{% endif %} 
   {% endfor %}
 ],
     datasets: [{
@@ -373,7 +378,87 @@ labels: [
       tooltip: {
         callbacks: {
           label: function(context) {
-            return context.dataset.label + ': €' + context.raw.toLocaleString();
+            return context.dataset.labels + ': €' + context.raw.toLocaleString();
+          }
+        }
+      }
+    }
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+var ctx0 = document.getElementById("chart-line").getContext("2d");
+
+// Prepare data
+var dates = [
+  {% for item in wallet_data %}
+     '{{ item.month|date:"Y-m" }}'{% if not forloop.last %},{% endif %}
+  {% endfor %}
+];
+
+var amounts = [
+  {% for item in wallet_data %}
+     {{ item.total_amount }}{% if not forloop.last %},{% endif %}
+  {% endfor %}
+];
+
+// Format dates for display
+var formattedDates = dates.map(function(dateString) {
+  var date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    year: '2-digit' 
+  });
+});
+
+new Chart(ctx0, {
+  type: "line", 
+  data: {
+    labels: dates,
+    datasets: [{
+      label: "Wealth Evolution",
+      data: amounts,
+      borderColor: 'rgb(75, 192, 192)',
+      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+      tension: 0.4,
+      fill: true
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: false,
+        ticks: {
+          callback: function(value) {
+            return '€' + value.toLocaleString();
+          }
+        }
+      },
+      x: {
+        display: true,
+        title: {
+          display: true,
+          text: 'Month-Year'
+        },
+        ticks: {
+          maxRotation: 45,
+          minRotation: 45,
+          maxTicksLimit: 12
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        display: false,
+        position: 'top'
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return 'Wealth: €' + context.raw.toLocaleString();
           }
         }
       }
