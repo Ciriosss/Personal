@@ -1,7 +1,13 @@
 from django.shortcuts import render
+from .models import *
 
 def transactions(request):
-    return render(request, 'finance/transaction.html')
+    transactions = Transaction.objects.filter(author=request.user).order_by('-date')
+
+    context = {
+        'transactions': transactions
+    }
+    return render(request, 'finance/transaction.html',context)
 
 def accounts(request):
     return render(request, 'finance/account.html')
