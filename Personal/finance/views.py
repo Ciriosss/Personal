@@ -16,13 +16,16 @@ def transactions(request):
 
     categories_recap = Transaction.objects.filter(author=request.user,date__year=current_year, date__month=current_month).exclude(type='Transfer').values('category_id__category').annotate(total_amount=Sum(Case(When(type='Expense', then=F('amount') * -1),
                                 default=F('amount')
-                    ))).annotate(count=Count('amount')).order_by(Abs('total_amount').desc())[:5]
+                    ))).annotate(count=Count('amount')).order_by(Abs('total_amount').desc())
+
+    transaction_count = Transaction.objects.filter(author=request.user,date__year=current_year, date__month=current_month).count()
 
     context = {
         'transactions': transactions,
         'current_month_name':current_month_name,
         'current_year':current_year,
         'categories_recap':categories_recap,
+        'transaction_count':transaction_count
     }
         
     return render(request, 'finance/transaction.html',context)
