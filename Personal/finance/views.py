@@ -6,8 +6,8 @@ import datetime
 import calendar
 from .models import *
 
+@login_required
 def transactions(request):
-
     current_year = datetime.datetime.now().year
     current_month = datetime.datetime.now().month
 
