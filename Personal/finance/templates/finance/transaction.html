@@ -190,7 +190,7 @@
               </div>
               <div class="card-body p-4 d-flex justify-content-center align-items-center" style="height: 400px;">
                 <div class="chart" style="width: 320px; height: 320px;">
-                  <canvas id="assetclass_graph" class="chart-canvas w-100 h-100"></canvas>
+                  <canvas id="class_graph" class="chart-canvas w-100 h-100"></canvas>
                 </div>
               </div>
             </div>
@@ -217,10 +217,60 @@
       </div>
     </div>
   </div>
-
+{{categories_recap}}
 </div>
 </div>
 
-
+<script>
+var ctx1 = document.getElementById("class_graph").getContext("2d");
+const baseColors1 = [
+  'rgb(255, 99, 132)',   
+  'rgb(54, 162, 235)',  
+  'rgb(255, 206, 86)',   
+  'rgb(75, 192, 192)',   
+  'rgb(153, 102, 255)', 
+  'rgb(255, 159, 64)'
+];
+const backgroundColors1 = baseColors1.map(c => c.replace('rgb', 'rgba').replace(')', ', 0.4)'));
+new Chart(ctx1, {
+  type: "doughnut",   
+  data: {
+    labels: [
+      {% for item in categories_recap %}
+         '{{ item.categories_recap }}'{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ],
+    datasets: [{
+      label: "",
+      data: [
+        {% for item in categories_recap %}
+           {{ item.total_amount }}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ],
+      backgroundColor: backgroundColors1,  
+      borderColor: baseColors1,           
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: "60%",   
+    plugins: {
+      legend: {
+        display: false,
+        position: 'top'
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return context.label + context.raw.toLocaleString() + '%';
+          }
+        }
+      }
+    }
+  }
+});
+</script>
 
 {% endblock %}
