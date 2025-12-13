@@ -65,7 +65,7 @@ def wallet(request):
 
 @login_required
 def investments(request):
-    investments_list = Investment.objects.filter(author=request.user).order_by('-date')[:10]
+    investments_list = Investment.objects.filter(author=request.user).order_by('-date')
     investments = Investment.objects.filter(author=request.user)
     investments_count = investments.count()
 
@@ -73,6 +73,7 @@ def investments(request):
         """ WITH investments AS (
                     
                 SELECT 
+                    id,
                     author_id,
                     instrument_code_id,
                     DATE(date) AS date,
@@ -96,7 +97,8 @@ def investments(request):
                     instrument_code_id,
                     date),
                 drill_down_adjustment AS (
-                    SELECT 
+                    SELECT
+                        id, 
                         author_id,
                         instrument_code_id,
                         date,
@@ -116,7 +118,8 @@ def investments(request):
                         investments
                 ),
                 investments_adj AS(
-                    SELECT 
+                    SELECT
+                        id, 
                         author_id,
                         instrument_code_id,
                         date,
@@ -133,7 +136,8 @@ def investments(request):
                         drill_down_adjustment
                 ),
                 investments_recalculation AS (
-                    SELECT 
+                    SELECT
+                        id, 
                         author_id,
                         instrument_code_id,
                         date,

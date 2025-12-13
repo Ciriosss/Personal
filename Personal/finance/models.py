@@ -38,6 +38,10 @@ class Investment(models.Model):
     quantity = models.DecimalField(max_digits=15, decimal_places=10)
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
+    @property
+    def total_value(self):
+        return float(round(self.price * self.quantity,2))
+
     def __str__(self):
         return f"{self.date}-{self.author}-{self.instrument_code}"
 
