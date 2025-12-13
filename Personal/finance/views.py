@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum,F,Count,Case,When,Window,Value
 from django.db.models.functions import Abs
 from django.db.models.functions import TruncDate
+from django.db import connections
 import datetime
 import calendar
 from .models import *
@@ -69,8 +70,8 @@ def investments(request):
     investments = Investment.objects.filter(author=request.user)
     investments_count = investments.count()
 
-    investment_recap = Investment.objects.filter(author=request.user).raw(
-        """ WITH investments AS (
+    query = """ 
+            WITH investments AS (
                     
                 SELECT 
                     id,
@@ -92,6 +93,8 @@ def investments(request):
                     IIF(quantity >= 0, 'Buy', 'Sell') AS operation
                 FROM 
                     finance_investment
+                WHERE 
+                    author_id = %s
                 ORDER BY 
                     author_id,
                     instrument_code_id,
@@ -152,8 +155,25 @@ def investments(request):
                     FROM investments_adj
                 )
 
-                SELECT * FROM investments_recalculation""")
-    print(investment_recap.query)
+            SELECT 
+					Investment.*,
+					Instrument.instrument_code AS instrument_code,
+					Instrument.instrument_name AS instrument_name
+			   FROM investments_recalculation Investment
+			   JOIN finance_instrument instrument
+			   ON 1 = 1
+				AND Investment.instrument_code_id = instrument_code_id""" % (request.user.id)
+
+    with connections['default'].cursor() as cursor:
+        cursor.execute(query)
+        columns = [col[0] for col in cursor.description]  # Get column names
+        rows = cursor.fetchall()
+
+    investment_recap = []
+    for row in rows:
+        investment_recap.append(dict(zip(columns, row)))
+
+    print(type(investment_recap))
     contex = {
         'investments_list': investments_list,
         'investments_count': investments_count,

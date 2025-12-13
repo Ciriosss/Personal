@@ -89,6 +89,7 @@
           </ul>
         </div>
       </div>
+      {{investment_recap}}
       
       <!-- New Small Summary Table -->
       <div class="card">
@@ -107,7 +108,7 @@
                 </tr>
               </thead>
               <tbody>
-                {% for summary in investment_summary %}
+                {% for item in investment_recap %}
                 <tr>
                   <td>
                     <div class="d-flex px-2 py-1">
@@ -115,7 +116,7 @@
                         <i class="ni ni-collection text-success text-sm opacity-10"></i>
                       </div>
                       <div class="d-flex flex-column justify-content-center">
-                        <h6 class="mb-0 text-xs">{{ summary.instrument_code }}</h6>
+                        <h6 class="mb-0 text-xs">{{ item.price }}</h6>
                       </div>
                     </div>
                   </td>
