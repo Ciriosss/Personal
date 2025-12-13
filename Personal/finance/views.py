@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum,F,Count,Case,When
+from django.db.models import Sum,F,Count,Case,When,Window,Value
 from django.db.models.functions import Abs
+from django.db.models.functions import TruncDate
 import datetime
 import calendar
 from .models import *
@@ -62,5 +63,97 @@ def accounts(request):
 def wallet(request):
     return render(request, 'finance/wallet.html')
 
+@login_required
 def investments(request):
-    return render(request, 'finance/investment.html')
+    investments_list = Investment.objects.filter(author=request.user).order_by('-date')[:10]
+    investments = Investment.objects.filter(author=request.user)
+    investments_count = investments.count()
+
+    investment_recap = Investment.objects.filter(author=request.user).raw(
+        """ WITH investments AS (
+                    
+                SELECT 
+                    author_id,
+                    instrument_code_id,
+                    DATE(date) AS date,
+                    price,
+                    quantity,
+                    price * quantity AS invested,
+                    SUM(quantity) OVER (PARTITION BY author_id, instrument_code_id ORDER BY date) AS cum_quantity,
+                    SUM(price * quantity) OVER (PARTITION BY author_id, instrument_code_id ORDER BY date) AS cum_invested,
+                    IIF(
+                        quantity < 0,
+                        ROUND(
+                            (price * SUM(quantity) OVER (PARTITION BY author_id, instrument_code_id ORDER BY date))
+                            - SUM(price * quantity) OVER (PARTITION BY author_id, instrument_code_id ORDER BY date)
+                        ,2)
+                    ,0) AS adjustment,
+                    IIF(quantity >= 0, 'Buy', 'Sell') AS operation
+                FROM 
+                    finance_investment
+                ORDER BY 
+                    author_id,
+                    instrument_code_id,
+                    date),
+                drill_down_adjustment AS (
+                    SELECT 
+                        author_id,
+                        instrument_code_id,
+                        date,
+                        price,
+                        quantity,
+                        invested,
+                        cum_quantity,
+                        cum_invested,
+                        IIF(
+                    adjustment = 0 
+                    AND LAG(adjustment) OVER (PARTITION BY author_id, instrument_code_id ORDER BY date) <> 0,
+                    LAG(adjustment) OVER (PARTITION BY author_id, instrument_code_id ORDER BY date),
+                    adjustment
+                ) AS adjustment,
+                        operation
+                    FROM
+                        investments
+                ),
+                investments_adj AS(
+                    SELECT 
+                        author_id,
+                        instrument_code_id,
+                        date,
+                        price,
+                        quantity,
+                        invested,
+                        cum_quantity,
+                        cum_invested  
+                        + COALESCE(LAG(adjustment) OVER (PARTITION BY author_id, instrument_code_id ORDER BY date),0)
+                        AS cum_invested,
+                        adjustment,
+                        operation
+                    FROM
+                        drill_down_adjustment
+                ),
+                investments_recalculation AS (
+                    SELECT 
+                        author_id,
+                        instrument_code_id,
+                        date,
+                        price,
+                        quantity,
+                        invested,
+                        cum_quantity,
+                        cum_invested ,
+                        operation,
+                        IIF(operation = 'Buy',ROUND((price * cum_quantity) - cum_invested,2),0)  as urgl,
+                        IIF(operation = 'Sell',ROUND((price * cum_quantity) - cum_invested,2),0) as rgl
+                    FROM investments_adj
+                )
+
+                SELECT * FROM investments_recalculation""")
+    print(investment_recap.query)
+    contex = {
+        'investments_list': investments_list,
+        'investments_count': investments_count,
+        'investment_recap': investment_recap
+    }
+
+    return render(request, 'finance/investment.html',contex)
