@@ -101,33 +101,30 @@
             <table class="table align-items-center mb-0">
               <thead>
                 <tr>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Instrument</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total Quantity</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Avg Price</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Current Value</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Instrument </th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"># Investments</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">URGL</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">RGL</th>
                 </tr>
               </thead>
               <tbody>
-                {% for item in investment_recap %}
+                {% for item in investment_summary %}
                 <tr>
                   <td>
                     <div class="d-flex px-2 py-1">
-                      <div>
-                        <i class="ni ni-collection text-success text-sm opacity-10"></i>
-                      </div>
                       <div class="d-flex flex-column justify-content-center">
-                        <h6 class="mb-0 text-xs">{{ item.price }}</h6>
+                        <h6 class="mb-0 text-xs">{{ item.instrument_code }}</h6>
                       </div>
                     </div>
                   </td>
                   <td class="align-middle text-center text-sm">
-                    <span class="text-xs font-weight-bold">{{ summary.total_quantity }}</span>
+                    <span class="text-xs font-weight-bold">{{ item.investment_count }}</span>
                   </td>
                   <td class="align-middle text-center text-sm">
-                    <span class="text-xs font-weight-bold">${{ summary.average_price }}</span>
+                    <span class="text-xs font-weight-bold">${{ item.URGL }}</span>
                   </td>
                   <td class="align-middle text-center text-sm">
-                    <span class="text-xs font-weight-bold">${{ summary.current_value }}</span>
+                    <span class="text-xs font-weight-bold">${{ item.RGL }}</span>
                   </td>
                 </tr>
                 {% empty %}
@@ -148,13 +145,13 @@
                     </div>
                   </td>
                   <td class="align-middle text-center text-sm">
-                    <span class="text-xs font-weight-bold">{{ total_quantity }}</span>
+                    <span class="text-xs font-weight-bold"></span>
                   </td>
                   <td class="align-middle text-center text-sm">
-                    <span class="text-xs">-</span>
+                    <span class="text-xs">{{ total_urgl }}</span>
                   </td>
                   <td class="align-middle text-center text-sm">
-                    <span class="text-xs font-weight-bold">${{ total_value }}</span>
+                    <span class="text-xs font-weight-bold">${{ total_rgl }}</span>
                   </td>
                 </tr>
               </tbody>
