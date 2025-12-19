@@ -1,5 +1,3 @@
-
-
 {% extends "dashboard/main.html" %}
 {% load static %}
 {% block content %}
@@ -65,7 +63,6 @@
         </div>
       </div>
     </div>
-    
     <!-- Right column - Cards Stack -->
     <div class="col-lg-5">
       <!-- Insert Data Card -->
@@ -105,6 +102,7 @@
                 <tr>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Instrument </th>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"># Investments</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Quantity</th>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">URGL</th>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">RGL</th>
                 </tr>
@@ -121,6 +119,9 @@
                   </td>
                   <td class="align-middle text-center text-sm">
                     <span class="text-xs font-weight-bold">{{ item.investment_count }}</span>
+                  </td>
+                   <td class="align-middle text-center text-sm">
+                    <span class="text-xs font-weight-bold">{{ item.quantity }}</span>
                   </td>
                   <td class="align-middle text-center text-sm">
                     <span class="text-xs font-weight-bold">${{ item.URGL }}</span>
@@ -145,6 +146,9 @@
                         <h6 class="mb-0 text-xs font-weight-bold">TOTAL</h6>
                       </div>
                     </div>
+                  </td>
+                  <td class="align-middle text-center text-sm">
+                    <span class="text-xs font-weight-bold"></span>
                   </td>
                   <td class="align-middle text-center text-sm">
                     <span class="text-xs font-weight-bold"></span>
@@ -192,21 +196,27 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 var ctx0 = document.getElementById("chart-line-investment").getContext("2d");
+
+// Prepare labels and data
+var labels = [
+  {% for item in investment_evolution %}
+    '{{ item.month }}'{% if not forloop.last %},{% endif %}
+  {% endfor %}
+];
+
+var data = [
+  {% for item in investment_evolution %}
+    {{ item.cum_invested }}{% if not forloop.last %},{% endif %}
+  {% endfor %}
+];
+
 new Chart(ctx0, {
   type: "line", 
   data: {
-labels: [
-  {% for item in investment_evolution %}
-     '{{ item.month|date:"m/y" }}'{% if not forloop.last %},{% endif %} 
-  {% endfor %}
-],
+    labels: labels,
     datasets: [{
-      label: "investment Evolution ",
-      data: [
-        {% for item in investment_evolution %}
-           {{ item.cum_invested }}{% if not forloop.last %},{% endif %}
-        {% endfor %}
-      ],
+      label: "Investment Evolution",
+      data: data,
       borderColor: 'rgb(75, 192, 192)',
       backgroundColor: 'rgba(75, 192, 192, 0.2)',
       tension: 0.4,
@@ -218,11 +228,15 @@ labels: [
     maintainAspectRatio: false,
     scales: {
       y: {
-        beginAtZero: false,
+        beginAtZero: true, // Changed to true since we're summing from 0
         ticks: {
           callback: function(value) {
             return '€' + value.toLocaleString();
           }
+        },
+        title: {
+          display: true,
+          text: 'Cumulative Investment'
         }
       },
       x: {
@@ -232,21 +246,21 @@ labels: [
           text: 'Month-Year'
         },
         ticks: {
-          maxRotation: 45,    
+          maxRotation: 45,
           minRotation: 45,
-          maxTicksLimit: 12   
+          maxTicksLimit: 12
         }
       }
     },
     plugins: {
       legend: {
-        display: false,
+        display: true,
         position: 'top'
       },
       tooltip: {
         callbacks: {
           label: function(context) {
-            return context.dataset.labels + ': €' + context.raw.toLocaleString();
+            return context.dataset.label + ': €' + context.raw.toLocaleString();
           }
         }
       }

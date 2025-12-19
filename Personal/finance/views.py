@@ -183,7 +183,8 @@ def investments(request):
                                 dt.instrument_code_id,
                                 dt.instrument_code,
                                 dt.instrument_name,
-                                dt.URGL
+                                dt.URGL,
+                                dt.cum_quantity AS quantity
                                 
                             FROM datamart dt
                             JOIN (
@@ -206,6 +207,7 @@ def investments(request):
                 RGL.instrument_code,
                 RGL.instrument_name,
                 investment_count,
+                quantity,
                 URGL,
                 RGL
 
@@ -306,11 +308,11 @@ def investments(request):
 			   FROM investments_recalculation Investment
 			   JOIN finance_instrument instrument
 			   ON 1 = 1
-				AND Investment.instrument_code_id = instrument_code_id""" % (request.user.id)
+				AND Investment.instrument_code_id = instrument.id""" % (request.user.id)
 
     with connections['default'].cursor() as cursor:
         cursor.execute(investment_evolution_query)
-        columns = [col[0] for col in cursor.description]  # Get column names
+        columns = [col[0] for col in cursor.description]
         rows = cursor.fetchall()
 
     investment_evolution = []
@@ -319,7 +321,7 @@ def investments(request):
 
     with connections['default'].cursor() as cursor:
         cursor.execute(investment_summary_query)
-        columns = [col[0] for col in cursor.description]  # Get column names
+        columns = [col[0] for col in cursor.description]  
         rows = cursor.fetchall()
 
     investment_summary = []
