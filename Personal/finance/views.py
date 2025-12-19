@@ -94,7 +94,7 @@ def investments(request):
                             FROM 
                                 finance_investment
                             WHERE 
-                                author_id = %s
+                                author_id = % s
                             ORDER BY 
                                 author_id,
                                 instrument_code_id,
@@ -176,7 +176,6 @@ def investments(request):
                                 instrument_code_id,
                                 instrument_code,
                                 instrument_name
-                            
                         ),
                         URGL AS (
                             SELECT 
@@ -211,13 +210,13 @@ def investments(request):
                 URGL,
                 RGL
 
-            FROM RGL
+            FROM RGL    
             FULL OUTER JOIN URGL
             ON RGL.instrument_code_id = URGL.instrument_code_id
-""" % (request.user.id)
+""" %(request.user.id)
 
     investment_evolution_query = """ 
-            WITH investments AS (
+             WITH investments AS (
                     
                 SELECT 
                     id,
@@ -240,7 +239,7 @@ def investments(request):
                 FROM 
                     finance_investment
                 WHERE 
-                    author_id = %s
+                    author_id = 1
                 ORDER BY 
                     author_id,
                     instrument_code_id,
@@ -279,6 +278,7 @@ def investments(request):
                         cum_invested  
                         + COALESCE(LAG(adjustment) OVER (PARTITION BY author_id, instrument_code_id ORDER BY date),0)
                         AS cum_invested,
+						price * cum_quantity AS market_value,
                         adjustment,
                         operation
                     FROM
@@ -296,19 +296,32 @@ def investments(request):
                         cum_quantity,
                         cum_invested ,
                         operation,
+						market_value,
+						ROW_NUMBER() OVER (PARTITION BY instrument_code_id,strftime('%Y-%m', DATE) ORDER BY DATE DESC ) AS rn,
                         IIF(operation = 'Buy',ROUND((price * cum_quantity) - cum_invested,2),0)  as urgl,
                         IIF(operation = 'Sell',ROUND((price * cum_quantity) - cum_invested,2),0) as rgl
                     FROM investments_adj
-                )
-
-            SELECT 
-					Investment.*,
-					Instrument.instrument_code AS instrument_code,
-					Instrument.instrument_name AS instrument_name
-			   FROM investments_recalculation Investment
-			   JOIN finance_instrument instrument
-			   ON 1 = 1
-				AND Investment.instrument_code_id = instrument.id""" % (request.user.id)
+                ), final AS (
+					SELECT 
+							Investment.*,
+							Instrument.instrument_code AS instrument_code,
+							Instrument.instrument_name AS instrument_name
+					   FROM investments_recalculation Investment
+					   JOIN finance_instrument instrument
+					   ON 1 = 1
+						AND Investment.instrument_code_id = instrument.id)
+						
+						
+				SELECT 
+					strftime('%Y-%m', DATE) as period,
+					SUM(CUM_INVESTED) AS invested,
+					SUM(market_value) AS market_value
+				FROM FINAL
+				GROUP BY 
+					strftime('%Y-%m', DATE)
+				ORDER BY 
+					strftime('%Y-%m', DATE)
+	""" 
 
     with connections['default'].cursor() as cursor:
         cursor.execute(investment_evolution_query)

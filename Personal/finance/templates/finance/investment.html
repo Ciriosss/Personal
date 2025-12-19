@@ -200,13 +200,19 @@ var ctx0 = document.getElementById("chart-line-investment").getContext("2d");
 // Prepare labels and data
 var labels = [
   {% for item in investment_evolution %}
-    '{{ item.month }}'{% if not forloop.last %},{% endif %}
+    '{{ item.period }}'{% if not forloop.last %},{% endif %}
   {% endfor %}
 ];
 
-var data = [
+var invested = [
   {% for item in investment_evolution %}
-    {{ item.cum_invested }}{% if not forloop.last %},{% endif %}
+    {{ item.invested }}{% if not forloop.last %},{% endif %}
+  {% endfor %}
+];
+
+var market_value = [
+  {% for item in investment_evolution %}
+    {{ item.market_value }}{% if not forloop.last %},{% endif %}
   {% endfor %}
 ];
 
@@ -214,21 +220,31 @@ new Chart(ctx0, {
   type: "line", 
   data: {
     labels: labels,
-    datasets: [{
-      label: "Investment Evolution",
-      data: data,
-      borderColor: 'rgb(75, 192, 192)',
-      backgroundColor: 'rgba(75, 192, 192, 0.2)',
-      tension: 0.4,
-      fill: true
-    }]
+    datasets: [
+      {
+        label: "Invested Amount",
+        data: invested,
+        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        tension: 0.4,
+        fill: false  // Changed to false or each line will fill to axis
+      },
+      {
+        label: "Market Value",
+        data: market_value,
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        tension: 0.4,
+        fill: false
+      }
+    ]
   },
   options: {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
       y: {
-        beginAtZero: true, // Changed to true since we're summing from 0
+        beginAtZero: true,
         ticks: {
           callback: function(value) {
             return '€' + value.toLocaleString();
@@ -236,7 +252,7 @@ new Chart(ctx0, {
         },
         title: {
           display: true,
-          text: 'Cumulative Investment'
+          text: 'Amount (€)'
         }
       },
       x: {
